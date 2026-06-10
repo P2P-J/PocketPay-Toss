@@ -1,104 +1,140 @@
 import { createRoute } from '@granite-js/react-native';
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+
+// 공유 백엔드 (메인 PocketPay와 동일한 Railway 서버)
+const API_BASE_URL = 'https://pocketpay-backend-production.up.railway.app';
+
+type HealthState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'ok'; body: string }
+  | { status: 'error'; message: string };
 
 export const Route = createRoute('/', {
-  component: Page,
+  component: Home,
 });
 
-function Page() {
-  const navigation = Route.useNavigation();
+function Home() {
+  const [health, setHealth] = useState<HealthState>({ status: 'idle' });
 
-  const goToAboutPage = () => {
-    navigation.navigate('/about');
-  };
+  async function checkHealth() {
+    setHealth({ status: 'loading' });
+    try {
+      const res = await fetch(`${API_BASE_URL}/health`);
+      const text = await res.text();
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      setHealth({ status: 'ok', body: text });
+    } catch (e) {
+      setHealth({ status: 'error', message: e instanceof Error ? e.message : '알 수 없는 오류' });
+    }
+  }
 
   return (
-    <Container>
-      <Text style={styles.title}>🎉 Welcome! 🎉</Text>
-      <Text style={styles.subtitle}>
-        This is a demo page for the <Text style={styles.brandText}>Granite</Text> Framework.
-      </Text>
-      <Text style={styles.description}>This page was created to showcase the features of the Granite.</Text>
-      <TouchableOpacity style={styles.button} onPress={goToAboutPage}>
-        <Text style={styles.buttonText}>Go to About Page</Text>
-      </TouchableOpacity>
-    </Container>
-  );
-}
+    <View style={styles.container}>
+      <View style={styles.hero}>
+        <Text style={styles.logo}>작은 모임</Text>
+        <Text style={styles.subtitle}>모임 회계, 이제 간편하게</Text>
+      </View>
 
-function Container({ children }: { children: React.ReactNode }) {
-  return <View style={styles.container}>{children}</View>;
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>백엔드 연결 확인</Text>
+        <Text style={styles.cardDesc}>공유 백엔드(Railway)와 통신이 되는지 확인해요.</Text>
+
+        <Pressable
+          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+          onPress={checkHealth}
+          disabled={health.status === 'loading'}
+        >
+          {health.status === 'loading' ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>연결 확인하기</Text>
+          )}
+        </Pressable>
+
+        <View style={styles.result}>
+          {health.status === 'idle' && <Text style={styles.resultIdle}>아직 확인 전이에요.</Text>}
+          {health.status === 'ok' && <Text style={styles.resultOk}>✓ 연결 성공 · {health.body}</Text>}
+          {health.status === 'error' && (
+            <Text style={styles.resultError}>✗ 연결 실패 · {health.message}</Text>
+          )}
+        </View>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
     justifyContent: 'center',
+    gap: 32,
+  },
+  hero: {
     alignItems: 'center',
+    gap: 8,
   },
-  brandText: {
-    color: '#0064FF',
-    fontWeight: 'bold',
-  },
-  text: {
-    fontSize: 24,
-    color: '#202632',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  title: {
+  logo: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1A202C',
-    textAlign: 'center',
-    marginBottom: 16,
+    fontWeight: '700',
+    color: '#3DD598', // 브랜드 메인 그린
   },
   subtitle: {
-    fontSize: 18,
-    color: '#4A5568',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  description: {
     fontSize: 16,
-    color: '#718096',
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+    color: '#8B95A1',
+  },
+  card: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    padding: 20,
+    gap: 12,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#191F28',
+  },
+  cardDesc: {
+    fontSize: 14,
+    color: '#8B95A1',
   },
   button: {
-    backgroundColor: '#0064FF',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: '#3DD598',
+    borderRadius: 12,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  buttonPressed: {
+    opacity: 0.85,
   },
   buttonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: '600',
   },
-  codeContainer: {
-    padding: 8,
-    backgroundColor: '#333',
-    borderRadius: 4,
-    width: '100%',
+  result: {
+    minHeight: 22,
+    justifyContent: 'center',
   },
-  code: {
-    color: 'white',
-    fontFamily: 'monospace',
-    letterSpacing: 0.5,
+  resultIdle: {
     fontSize: 14,
+    color: '#B0B8C1',
+  },
+  resultOk: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3DD598',
+  },
+  resultError: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#F04452', // 지출/에러 레드
   },
 });
