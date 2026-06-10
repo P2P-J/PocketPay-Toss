@@ -1,0 +1,21 @@
+node_modules/
+dist/
+npm-debug.log
+
+.yarn/*
+.pnp.*
+yarn-error.log
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+.env
+.granite
+.swc
+.DS_Store
+*.ait
+
+# Claude Code 로컬 개인 설정 (머신별 경로/권한)
+.claude/settings.local.json
