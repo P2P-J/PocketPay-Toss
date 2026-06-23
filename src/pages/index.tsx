@@ -1,35 +1,30 @@
 import { createRoute } from '@granite-js/react-native';
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-
-// 공유 백엔드 (메인 PocketPay와 동일한 Railway 서버)
-const API_BASE_URL = 'https://pocketpay-backend-production.up.railway.app';
-
-type HealthState =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'ok'; body: string }
-  | { status: 'error'; message: string };
+import { useAuthStore } from '../store/authStore';
 
 export const Route = createRoute('/', {
   component: Home,
 });
 
 function Home() {
-  const [health, setHealth] = useState<HealthState>({ status: 'idle' });
+  const navigation = Route.useNavigation();
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+  const checkAuth = useAuthStore((s) => s.checkAuth);
+  const logout = useAuthStore((s) => s.logout);
 
-  async function checkHealth() {
-    setHealth({ status: 'loading' });
-    try {
-      const res = await fetch(`${API_BASE_URL}/health`);
-      const text = await res.text();
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-      setHealth({ status: 'ok', body: text });
-    } catch (e) {
-      setHealth({ status: 'error', message: e instanceof Error ? e.message : '알 수 없는 오류' });
-    }
+  // 앱 시작 시 저장된 토큰으로 세션 복구 시도
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  if (loading && !user) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <ActivityIndicator color="#3DD598" />
+      </View>
+    );
   }
 
   return (
@@ -39,30 +34,28 @@ function Home() {
         <Text style={styles.subtitle}>모임 회계, 이제 간편하게</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>백엔드 연결 확인</Text>
-        <Text style={styles.cardDesc}>공유 백엔드(Railway)와 통신이 되는지 확인해요.</Text>
-
-        <Pressable
-          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-          onPress={checkHealth}
-          disabled={health.status === 'loading'}
-        >
-          {health.status === 'loading' ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.buttonText}>연결 확인하기</Text>
-          )}
-        </Pressable>
-
-        <View style={styles.result}>
-          {health.status === 'idle' && <Text style={styles.resultIdle}>아직 확인 전이에요.</Text>}
-          {health.status === 'ok' && <Text style={styles.resultOk}>✓ 연결 성공 · {health.body}</Text>}
-          {health.status === 'error' && (
-            <Text style={styles.resultError}>✗ 연결 실패 · {health.message}</Text>
-          )}
+      {user ? (
+        <View style={styles.card}>
+          <Text style={styles.welcome}>✓ 로그인됐어요</Text>
+          <Text style={styles.name}>{user.name ?? user.nickname ?? '토스 사용자'}님</Text>
+          <Pressable
+            style={({ pressed }) => [styles.buttonGhost, pressed && styles.pressed]}
+            onPress={() => logout()}
+          >
+            <Text style={styles.buttonGhostText}>로그아웃</Text>
+          </Pressable>
         </View>
-      </View>
+      ) : (
+        <View style={styles.bottom}>
+          <Text style={styles.notice}>로그인하고 시작해요.</Text>
+          <Pressable
+            style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+            onPress={() => navigation.navigate('/login')}
+          >
+            <Text style={styles.buttonText}>토스로 시작하기</Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }
@@ -72,17 +65,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
+    paddingVertical: 56,
+    justifyContent: 'space-between',
+  },
+  center: {
+    alignItems: 'center',
     justifyContent: 'center',
-    gap: 32,
   },
   hero: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
   },
   logo: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: '700',
-    color: '#3DD598', // 브랜드 메인 그린
+    color: '#3DD598',
   },
   subtitle: {
     fontSize: 16,
@@ -92,16 +91,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
     borderRadius: 16,
     padding: 20,
-    gap: 12,
+    gap: 6,
+    alignItems: 'center',
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#191F28',
-  },
-  cardDesc: {
+  welcome: {
     fontSize: 14,
-    color: '#8B95A1',
+    fontWeight: '600',
+    color: '#3DD598',
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#191F28',
+    marginBottom: 8,
+  },
+  bottom: {
+    gap: 12,
   },
   button: {
     backgroundColor: '#3DD598',
@@ -109,32 +114,28 @@ const styles = StyleSheet.create({
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 4,
-  },
-  buttonPressed: {
-    opacity: 0.85,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
-  result: {
-    minHeight: 22,
+  buttonGhost: {
+    height: 44,
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  resultIdle: {
-    fontSize: 14,
+  buttonGhostText: {
+    color: '#8B95A1',
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  pressed: {
+    opacity: 0.85,
+  },
+  notice: {
+    fontSize: 13,
     color: '#B0B8C1',
-  },
-  resultOk: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#3DD598',
-  },
-  resultError: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#F04452', // 지출/에러 레드
+    textAlign: 'center',
   },
 });
