@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Icon } from '@toss/tds-react-native';
+import { Icon, Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { getTeamId } from '../../types/team';
 import type { Team } from '../../types/team';
@@ -19,7 +19,7 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
   return (
     <View style={styles.header}>
       <Pressable style={styles.left} onPress={() => setTeamSheet(true)}>
-        <Text style={styles.name}>{currentTeam?.name ?? '작은 모임'}</Text>
+        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>{currentTeam?.name ?? '작은 모임'}</Txt>
         <Text style={styles.caret}>▾</Text>
       </Pressable>
       <Pressable style={styles.members} onPress={() => setMemberSheet(true)}>
@@ -44,8 +44,7 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', height: 56 },
   left: { flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1 },
-  name: { fontSize: 20, fontWeight: '700', color: colors.textPrimary },
-  caret: { fontSize: 16, color: colors.textSecondary },
+  caret: { fontSize: 18, color: colors.textSecondary },
   members: {
     width: 40,
     height: 40,

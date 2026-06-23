@@ -3,8 +3,15 @@ import { render, fireEvent } from '@testing-library/react-native';
 import type { Team } from '../../types/team';
 import { TeamHeader } from './TeamHeader';
 
-// TDS(@toss/tds-react-native)는 jest import 시점에 네이티브 의존으로 크래시하므로 Icon을 목으로 대체.
-jest.mock('@toss/tds-react-native', () => ({ Icon: () => null }));
+// TDS(@toss/tds-react-native)는 jest import 시점에 네이티브 의존으로 크래시하므로 Icon/Txt를 목으로 대체.
+jest.mock('@toss/tds-react-native', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { Text } = require('react-native');
+  return {
+    Icon: () => null,
+    Txt: ({ children }: { children: React.ReactNode }) => <Text>{children}</Text>,
+  };
+});
 
 const teams: Team[] = [
   { _id: 'team-a', name: '점심 모임' },

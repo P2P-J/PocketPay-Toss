@@ -1,20 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Txt } from '@toss/tds-react-native';
 import { groupByDate } from '../../lib/date';
 import { colors } from '../../constants/colors';
+import { spacing } from '../../constants/spacing';
 import { TransactionRow } from './TransactionRow';
 import type { Transaction } from '../../types/transaction';
 
 export function TransactionList({ transactions }: { transactions: Transaction[] }) {
   if (transactions.length === 0) {
-    return <Text style={styles.empty}>이번 달 거래가 없어요</Text>;
+    return (
+      <View style={styles.emptyWrap}>
+        <Txt typography="t5" color={colors.textCaption}>이번 달 거래가 없어요</Txt>
+      </View>
+    );
   }
   const groups = groupByDate(transactions);
   return (
     <View>
       {groups.map((g) => (
         <View key={g.key}>
-          <Text style={styles.dateHeader}>{g.label}</Text>
+          <View style={styles.dateHeader}>
+            <Txt typography="t7" fontWeight="medium" color={colors.textCaption}>{g.label}</Txt>
+          </View>
           {g.items.map((tx) => (
             <TransactionRow key={tx.id} tx={tx} />
           ))}
@@ -25,6 +33,6 @@ export function TransactionList({ transactions }: { transactions: Transaction[] 
 }
 
 const styles = StyleSheet.create({
-  dateHeader: { fontSize: 13, color: colors.textSecondary, marginTop: 16, marginBottom: 4, paddingHorizontal: 4 },
-  empty: { fontSize: 14, color: colors.textTertiary, textAlign: 'center', paddingVertical: 40 },
+  dateHeader: { marginTop: spacing.section, marginBottom: spacing.xs },
+  emptyWrap: { alignItems: 'center', paddingVertical: 40 },
 });

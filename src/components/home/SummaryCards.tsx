@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
+import { spacing, radius } from '../../constants/spacing';
 import { formatSigned } from '../../lib/format';
 
 interface Props {
@@ -20,20 +21,20 @@ export function SummaryCards({ income, expense, incomeChange, expenseChange }: P
   return (
     <View style={styles.row}>
       <View style={styles.card}>
-        <Txt typography="t6" color={colors.textSecondary}>이번 달 수입</Txt>
+        <Txt typography="t7" color={colors.textSecondary}>이번 달 수입</Txt>
         <Txt typography="t4" color={colors.income} fontWeight="bold">{formatSigned(income, 'income')}</Txt>
-        {changeLabel(incomeChange) && <Txt typography="t7" color={colors.income}>{changeLabel(incomeChange)}</Txt>}
+        {changeLabel(incomeChange) && <Txt typography="t7" fontWeight="medium" color={colors.income}>{changeLabel(incomeChange)}</Txt>}
       </View>
       <View style={styles.card}>
-        <Txt typography="t6" color={colors.textSecondary}>이번 달 지출</Txt>
+        <Txt typography="t7" color={colors.textSecondary}>이번 달 지출</Txt>
         <Txt typography="t4" color={colors.expense} fontWeight="bold">{formatSigned(expense, 'expense')}</Txt>
-        {changeLabel(expenseChange) && <Txt typography="t7" color={colors.expense}>{changeLabel(expenseChange)}</Txt>}
+        {changeLabel(expenseChange) && <Txt typography="t7" fontWeight="medium" color={colors.expense}>{changeLabel(expenseChange)}</Txt>}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 12 },
-  card: { flex: 1, backgroundColor: colors.cardBg, borderRadius: 16, padding: 16, gap: 4 },
+  row: { flexDirection: 'row', gap: spacing.cardGap },
+  card: { flex: 1, backgroundColor: colors.cardBg, borderRadius: radius.card, padding: spacing.cardPadding, gap: spacing.xs },
 });

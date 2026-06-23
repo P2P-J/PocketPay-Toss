@@ -15,6 +15,13 @@ jest.mock('./TransactionRow', () => ({
   },
 }));
 
+// TransactionList 가 직접 import 하는 TDS Txt 도 jest 에서 크래시하므로 RN Text 로 대체.
+jest.mock('@toss/tds-react-native', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { Text } = require('react-native');
+  return { Txt: ({ children }: { children: React.ReactNode }) => <Text>{children}</Text> };
+});
+
 // jest.mock 은 import 위로 hoist 되므로 아래 import 가 mock 을 받는다.
 import { TransactionList } from './TransactionList';
 

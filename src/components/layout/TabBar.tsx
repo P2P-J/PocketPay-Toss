@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Icon } from '@toss/tds-react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Icon, Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
+import { spacing } from '../../constants/spacing';
 
 type TabKey = 'home' | 'transactions' | 'history' | 'more';
 
@@ -26,7 +27,7 @@ export function TabBar({
       {TABS.map((t) => (
         <Pressable key={t.key} style={styles.tab} onPress={() => onNavigate(t.path)}>
           <Icon name={t.icon} size={24} color={active === t.key ? colors.brand : colors.textSecondary} />
-          <Text style={[styles.label, active === t.key && styles.active]}>{t.label}</Text>
+          <Txt typography="t7" fontWeight="medium" color={active === t.key ? colors.brand : colors.textSecondary}>{t.label}</Txt>
         </Pressable>
       ))}
       <Pressable testID="tab-fab" style={styles.fab} onPress={onAdd}>
@@ -39,14 +40,12 @@ export function TabBar({
 const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    height: 64,
+    height: 60,
     borderTopWidth: 1,
     borderTopColor: colors.divider,
     backgroundColor: colors.white,
   },
-  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 },
-  label: { fontSize: 11, color: colors.textSecondary },
-  active: { color: colors.brand, fontWeight: '600' },
+  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
   fab: {
     position: 'absolute',
     top: -20,

@@ -15,8 +15,9 @@ export function TransactionRow({ tx }: { tx: Transaction }) {
         <ListRow.Texts
           type="2RowTypeA"
           top={tx.merchant || getCategoryLabel(tx.category)}
+          topProps={{ fontWeight: 'medium', color: colors.textPrimary }}
           bottom={getCategoryLabel(tx.category)}
-          bottomProps={{ typography: 't7', color: colors.textSecondary }}
+          bottomProps={{ typography: 't7', color: colors.textCaption }}
         />
       }
       right={

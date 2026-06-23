@@ -1,12 +1,29 @@
-// 브랜드/시맨틱 컬러 토큰 (TDS 커스텀 색 + StyleSheet 공용)
+// 컬러 토큰 — TDS 그레이 스케일(토스 실제 값) + 브랜드/시맨틱.
+// 폰트 "크기"는 하드코딩하지 않고 TDS Txt typography 토큰을 쓴다(접근성). 색은 이 토큰을 쓴다.
 export const colors = {
-  brand: '#3DD598', // 메인 그린(잔액)
-  income: '#3182F6', // 수입 파랑
-  expense: '#F04452', // 지출 빨강
-  textPrimary: '#191F28',
-  textSecondary: '#8B95A1',
-  textTertiary: '#B0B8C1',
-  divider: '#E5E8EB',
-  cardBg: '#F9FAFB',
-  white: '#FFFFFF',
+  // 브랜드 / 시맨틱
+  brand: '#3DD598', // 잔액 · primary
+  income: '#3182f6', // = TDS blue500 (수입)
+  expense: '#f04452', // = TDS red500 (지출)
+
+  // TDS 그레이 스케일 (텍스트 위계 / 라인 / 배경)
+  grey900: '#191f28',
+  grey800: '#333d4b',
+  grey700: '#4e5968',
+  grey600: '#6b7684',
+  grey500: '#8b95a1',
+  grey400: '#b0b8c1',
+  grey300: '#d1d6db',
+  grey200: '#e5e8eb',
+  grey100: '#f2f4f6',
+  grey50: '#f9fafb',
+  white: '#ffffff',
+
+  // 시맨틱 별칭 (텍스트 위계)
+  textPrimary: '#191f28', // grey900 본문/제목
+  textSecondary: '#6b7684', // grey600 라벨
+  textCaption: '#8b95a1', // grey500 캡션/약한 텍스트
+  textTertiary: '#b0b8c1', // grey400 비활성/플레이스홀더
+  divider: '#e5e8eb', // grey200
+  cardBg: '#f9fafb', // grey50
 } as const;
