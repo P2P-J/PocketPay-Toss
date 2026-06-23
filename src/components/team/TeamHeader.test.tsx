@@ -3,6 +3,9 @@ import { render, fireEvent } from '@testing-library/react-native';
 import type { Team } from '../../types/team';
 import { TeamHeader } from './TeamHeader';
 
+// TDS(@toss/tds-react-native)는 jest import 시점에 네이티브 의존으로 크래시하므로 Icon을 목으로 대체.
+jest.mock('@toss/tds-react-native', () => ({ Icon: () => null }));
+
 const teams: Team[] = [
   { _id: 'team-a', name: '점심 모임' },
   { _id: 'team-b', name: '여행 모임' },

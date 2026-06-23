@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Icon } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 
 type TabKey = 'home' | 'transactions' | 'history' | 'more';
 
 const TABS: { key: TabKey; label: string; icon: string; path: string }[] = [
-  { key: 'home', label: '홈', icon: '🏠', path: '/' },
-  { key: 'transactions', label: '거래', icon: '🔁', path: '/transactions' },
-  { key: 'history', label: '내역', icon: '🕘', path: '/history' },
-  { key: 'more', label: '더보기', icon: '⋯', path: '/more' },
+  { key: 'home', label: '홈', icon: 'icon-home-mono', path: '/' },
+  { key: 'transactions', label: '거래', icon: 'icon-transfer-mono', path: '/transactions' },
+  { key: 'history', label: '내역', icon: 'icon-clock-mono', path: '/history' },
+  { key: 'more', label: '더보기', icon: 'icon-dots-mono', path: '/more' },
 ];
 
 export function TabBar({
@@ -24,12 +25,12 @@ export function TabBar({
     <View style={styles.bar}>
       {TABS.map((t) => (
         <Pressable key={t.key} style={styles.tab} onPress={() => onNavigate(t.path)}>
-          <Text style={styles.icon}>{t.icon}</Text>
+          <Icon name={t.icon} size={24} color={active === t.key ? colors.brand : colors.textSecondary} />
           <Text style={[styles.label, active === t.key && styles.active]}>{t.label}</Text>
         </Pressable>
       ))}
-      <Pressable style={styles.fab} onPress={onAdd}>
-        <Text style={styles.fabPlus}>+</Text>
+      <Pressable testID="tab-fab" style={styles.fab} onPress={onAdd}>
+        <Icon name="icon-plus-mono" size={28} color={colors.white} />
       </Pressable>
     </View>
   );
@@ -43,8 +44,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.divider,
     backgroundColor: colors.white,
   },
-  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2 },
-  icon: { fontSize: 18 },
+  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 },
   label: { fontSize: 11, color: colors.textSecondary },
   active: { color: colors.brand, fontWeight: '600' },
   fab: {
@@ -60,5 +60,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fabPlus: { color: colors.white, fontSize: 28, fontWeight: '300' },
 });
