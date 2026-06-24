@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Txt } from '@toss/tds-react-native';
+import { View, StyleSheet } from 'react-native';
+import { Txt, Icon } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { formatWon, formatSigned } from '../../lib/format';
@@ -23,7 +23,7 @@ export function BalanceCard({ balance, income, expense }: Props) {
     <View style={styles.card}>
       <View style={styles.pill}>
         <Txt typography="t7" fontWeight="medium" color={onGreen.strong}>이번 달</Txt>
-        <Text style={styles.caret}>▾</Text>
+        <Icon name="icon-arrow-down-mono" size={16} color={onGreen.strong} />
       </View>
       <View style={styles.balanceBlock}>
         <Txt typography="t7" color={onGreen.soft}>전체 잔액</Txt>
@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
+    gap: 2,
   },
-  caret: { fontSize: 13, color: onGreen.strong, marginLeft: 3 },
   balanceBlock: { gap: spacing.xs },
   summary: { flexDirection: 'row' },
   col: { flex: 1, gap: spacing.xs },

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Icon, Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { getTeamId } from '../../types/team';
@@ -20,7 +20,7 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
     <View style={styles.header}>
       <Pressable style={styles.left} onPress={() => setTeamSheet(true)}>
         <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>{currentTeam?.name ?? '작은 모임'}</Txt>
-        <Text style={styles.caret}>▾</Text>
+        <Icon name="icon-arrow-down-mono" size={20} color={colors.textSecondary} />
       </Pressable>
       <Pressable style={styles.members} onPress={() => setMemberSheet(true)}>
         <Icon name="icon-user-two-mono" size={20} color={colors.textSecondary} />
@@ -44,7 +44,6 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', height: 56 },
   left: { flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1 },
-  caret: { fontSize: 18, color: colors.textSecondary },
   members: {
     width: 40,
     height: 40,

@@ -28,14 +28,14 @@ it('현재 팀 이름을 표시한다', () => {
   getByText('점심 모임');
 });
 
-it('팀명(▾)을 탭하면 팀 선택 시트가 열린다', () => {
+it('팀명을 탭하면 팀 선택 시트가 열린다', () => {
   const { getByText, queryByText } = render(
     <TeamHeader teams={teams} currentTeam={currentTeam} onSelectTeam={jest.fn()} />,
   );
 
   expect(queryByText('모임 선택')).toBeNull();
 
-  fireEvent.press(getByText('▾'));
+  fireEvent.press(getByText('점심 모임'));
 
   getByText('모임 선택');
 });
