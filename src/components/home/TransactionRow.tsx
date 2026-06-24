@@ -1,16 +1,16 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
 import { ListRow } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { formatSigned } from '../../lib/format';
-import { getCategoryEmoji, getCategoryLabel } from '../../constants/categories';
+import { getCategoryLabel } from '../../constants/categories';
+import { CategoryIcon } from './CategoryIcon';
 import type { Transaction } from '../../types/transaction';
 
 export function TransactionRow({ tx }: { tx: Transaction }) {
   const amountColor = tx.type === 'income' ? colors.income : colors.expense;
   return (
     <ListRow
-      left={<Text style={styles.emoji}>{getCategoryEmoji(tx.category)}</Text>}
+      left={<CategoryIcon category={tx.category} />}
       contents={
         <ListRow.Texts
           type="2RowTypeA"
@@ -30,5 +30,3 @@ export function TransactionRow({ tx }: { tx: Transaction }) {
     />
   );
 }
-
-const styles = StyleSheet.create({ emoji: { fontSize: 22 } });

@@ -5,6 +5,10 @@ import { getTeamId } from '../types/team';
 import { dealToTransaction, type Transaction } from '../types/transaction';
 import type { Team } from '../types/team';
 import type { Summary, MonthlyStats } from '../types/stats';
+// ⚠️ TEMP — 디자인 프리뷰용 샘플 데이터. 디자인 확정/Phase 3 후 제거.
+import { sampleTeams, sampleSummary, sampleStats, sampleTransactions } from '../constants/sampleData';
+
+const USE_SAMPLE = true; // ⚠️ TEMP: 디자인 프리뷰. 실서비스 전 false/제거.
 
 interface TeamState {
   teams: Team[];
@@ -32,6 +36,18 @@ export const useTeamStore = create<TeamState>((set, get) => ({
   error: null,
 
   fetchTeams: async () => {
+    if (USE_SAMPLE) {
+      set({
+        teams: sampleTeams,
+        currentTeam: sampleTeams[0] ?? null,
+        summary: sampleSummary,
+        stats: sampleStats,
+        transactions: sampleTransactions,
+        loading: false,
+        error: null,
+      });
+      return;
+    }
     set({ loading: true, error: null });
     try {
       const res = await teamApi.getMyTeams();
@@ -48,6 +64,16 @@ export const useTeamStore = create<TeamState>((set, get) => ({
   },
 
   setCurrentTeam: async (teamId: string) => {
+    if (USE_SAMPLE) {
+      set({
+        currentTeam: sampleTeams.find((t) => getTeamId(t) === teamId) ?? sampleTeams[0] ?? null,
+        summary: sampleSummary,
+        stats: sampleStats,
+        transactions: sampleTransactions,
+        loading: false,
+      });
+      return;
+    }
     set({ loading: true, error: null });
     try {
       const now = new Date();

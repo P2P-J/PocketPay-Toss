@@ -12,6 +12,11 @@ jest.mock('@toss/tds-react-native', () => {
   };
 });
 
+// SafeAreaProvider 없이 렌더하므로 insets 훅을 0으로 모킹.
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+
 it('renders 4 tab labels', () => {
   const { getByText } = render(<TabBar active="home" onNavigate={() => {}} onAdd={() => {}} />);
   expect(getByText('홈')).toBeTruthy();

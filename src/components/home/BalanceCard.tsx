@@ -1,26 +1,66 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
-import { formatWon } from '../../lib/format';
+import { formatWon, formatSigned } from '../../lib/format';
 
-export function BalanceCard({ balance }: { balance: number }) {
+// 그린 배경 위 텍스트/요소 색 (흰색 알파) — 배경이 브랜드 그린이라 별도 토큰 사용
+const onGreen = {
+  strong: '#ffffff',
+  soft: 'rgba(255,255,255,0.78)',
+  pill: 'rgba(255,255,255,0.20)',
+};
+
+interface Props {
+  balance: number;
+  income: number;
+  expense: number;
+}
+
+export function BalanceCard({ balance, income, expense }: Props) {
   return (
     <View style={styles.card}>
-      <Txt typography="t7" color={colors.textSecondary}>전체 잔액</Txt>
-      <Txt typography="t1" color={colors.brand} fontWeight="bold">{formatWon(balance)}</Txt>
+      <View style={styles.pill}>
+        <Txt typography="t7" fontWeight="medium" color={onGreen.strong}>이번 달</Txt>
+        <Text style={styles.caret}>▾</Text>
+      </View>
+      <View style={styles.balanceBlock}>
+        <Txt typography="t7" color={onGreen.soft}>전체 잔액</Txt>
+        <Txt typography="t1" fontWeight="bold" color={onGreen.strong}>{formatWon(balance)}</Txt>
+      </View>
+      <View style={styles.summary}>
+        <View style={styles.col}>
+          <Txt typography="t7" color={onGreen.soft}>수입</Txt>
+          <Txt typography="t4" fontWeight="bold" color={onGreen.strong}>{formatSigned(income, 'income')}</Txt>
+        </View>
+        <View style={styles.col}>
+          <Txt typography="t7" color={onGreen.soft}>지출</Txt>
+          <Txt typography="t4" fontWeight="bold" color={onGreen.strong}>{formatSigned(expense, 'expense')}</Txt>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.divider,
+    backgroundColor: colors.brand,
     borderRadius: radius.card,
     padding: spacing.cardPadding,
-    gap: spacing.xs,
+    gap: spacing.lg,
   },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: onGreen.pill,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+  },
+  caret: { fontSize: 13, color: onGreen.strong, marginLeft: 3 },
+  balanceBlock: { gap: spacing.xs },
+  summary: { flexDirection: 'row' },
+  col: { flex: 1, gap: spacing.xs },
 });
