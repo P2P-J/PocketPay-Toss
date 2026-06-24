@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
-import { spacing, radius } from '../../constants/spacing';
+import { spacing } from '../../constants/spacing';
 import { formatWon } from '../../lib/format';
 import { getCategoryLabel, getCategoryEmoji } from '../../constants/categories';
 
@@ -22,7 +22,9 @@ export function CategoryBar({ category, total, percent }: Props) {
         </View>
         <View style={styles.right}>
           <Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>{formatWon(total)}</Txt>
-          <Txt typography="t7" color={colors.textCaption}>{percent}%</Txt>
+          <View style={styles.pct}>
+            <Txt typography="t7" color={colors.textCaption}>{percent}%</Txt>
+          </View>
         </View>
       </View>
       <View style={styles.track}>
@@ -37,7 +39,8 @@ const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   right: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  emoji: { fontSize: 18, includeFontPadding: false },
-  track: { height: 6, borderRadius: radius.pill, backgroundColor: colors.grey200, overflow: 'hidden' },
-  fill: { height: 6, borderRadius: radius.pill, backgroundColor: colors.brand },
+  emoji: { fontSize: 18, lineHeight: 23, includeFontPadding: false },
+  pct: { width: 34, alignItems: 'flex-end' },
+  track: { height: 8, borderRadius: 5, backgroundColor: colors.grey100, overflow: 'hidden' },
+  fill: { height: 8, borderRadius: 5, backgroundColor: colors.brand },
 });

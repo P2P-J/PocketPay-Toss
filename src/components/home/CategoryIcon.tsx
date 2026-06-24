@@ -3,14 +3,15 @@ import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '../../constants/colors';
 import { getCategoryEmoji } from '../../constants/categories';
 
-// 카테고리 이모지를 연회색 원형 배경 안에 중앙정렬해 비율을 강제로 맞춘다.
-// (이모지를 맨 Text로 두면 글리프 베이스라인이 위로 떠 정렬이 깨진다 — 토스 가계부 스타일로 통일)
-export function CategoryIcon({ category, size = 40 }: { category: string | null | undefined; size?: number }) {
+// 카테고리 이모지를 연회색 둥근 사각형 안에 중앙정렬한다 (HTML 레퍼런스: 42px / radius 13 / emoji 20px).
+// lineHeight를 fontSize보다 넉넉히 줘야 이모지 글리프 위아래가 잘리지 않는다.
+export function CategoryIcon({ category, size = 42 }: { category: string | null | undefined; size?: number }) {
+  const fontSize = Math.round(size * 0.48);
   return (
-    <View style={[styles.circle, { width: size, height: size, borderRadius: size / 2 }]}>
+    <View style={[styles.box, { width: size, height: size, borderRadius: Math.round(size * 0.31) }]}>
       <Text
         allowFontScaling={false}
-        style={[styles.emoji, { fontSize: size * 0.5, lineHeight: size * 0.5 }]}
+        style={[styles.emoji, { fontSize, lineHeight: Math.round(fontSize * 1.3) }]}
       >
         {getCategoryEmoji(category)}
       </Text>
@@ -19,7 +20,7 @@ export function CategoryIcon({ category, size = 40 }: { category: string | null 
 }
 
 const styles = StyleSheet.create({
-  circle: {
+  box: {
     backgroundColor: colors.grey100,
     alignItems: 'center',
     justifyContent: 'center',

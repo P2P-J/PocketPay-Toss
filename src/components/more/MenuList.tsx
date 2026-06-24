@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   section: { gap: spacing.sm },
   card: {},
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, height: 56 },
-  emoji: { fontSize: 20, width: 24, textAlign: 'center', includeFontPadding: false },
+  emoji: { fontSize: 18, lineHeight: 24, width: 24, textAlign: 'center', includeFontPadding: false },
   spacer: { flex: 1 },
   chevron: { fontSize: 20, color: colors.textTertiary, marginLeft: spacing.sm },
   divider: { height: 1, backgroundColor: colors.divider, marginLeft: 36 },

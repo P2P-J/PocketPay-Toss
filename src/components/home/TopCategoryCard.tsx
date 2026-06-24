@@ -11,7 +11,7 @@ export function TopCategoryCard({ topCategory }: { topCategory: { category: stri
   if (!topCategory) return null;
   return (
     <View style={styles.card}>
-      <CategoryIcon category={topCategory.category} size={40} />
+      <CategoryIcon category={topCategory.category} size={42} />
       <View style={styles.texts}>
         <Txt typography="t7" color={colors.textCaption}>이번 달 최다 지출</Txt>
         <Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>{getCategoryLabel(topCategory.category)}</Txt>

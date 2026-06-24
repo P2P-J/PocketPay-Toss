@@ -32,14 +32,14 @@ const styles = StyleSheet.create({
     padding: spacing.cardPadding,
   },
   icon: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.button,
+    width: 52,
+    height: 52,
+    borderRadius: radius.card,
     backgroundColor: colors.brand,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emoji: { fontSize: 24, includeFontPadding: false },
+  emoji: { fontSize: 24, lineHeight: 31, includeFontPadding: false },
   texts: { flex: 1, gap: 2 },
   chevron: { fontSize: 22, color: colors.textTertiary },
 });
