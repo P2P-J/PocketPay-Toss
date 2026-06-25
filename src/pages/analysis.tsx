@@ -8,6 +8,7 @@ import { PageHeader } from '../components/layout/PageHeader';
 import { TabBar } from '../components/layout/TabBar';
 import { SummaryTab } from '../components/analysis/SummaryTab';
 import { CategoryTab } from '../components/analysis/CategoryTab';
+import { BudgetTab } from '../components/analysis/BudgetTab';
 import { getAnalysisData } from '../constants/sampleAnalysis';
 
 export const Route = createRoute('/analysis', { component: AnalysisPage });
@@ -56,8 +57,9 @@ function AnalysisPage() {
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {tab === 'summary' && <SummaryTab data={data} />}
           {tab === 'category' && <CategoryTab data={data} />}
-          {/* P3~P4: 예산/멤버 탭 */}
-          {(tab === 'budget' || tab === 'member') && (
+          {tab === 'budget' && <BudgetTab data={data} />}
+          {/* P4: 멤버 탭 */}
+          {tab === 'member' && (
             <View style={styles.placeholder}>
               <Txt typography="t5" color={colors.textCaption}>
                 {TABS.find((t) => t.value === tab)?.label} 준비 중
