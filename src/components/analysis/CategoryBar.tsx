@@ -10,9 +10,10 @@ interface Props {
   category: string;
   total: number;
   percent: number; // 0~100
+  color?: string; // 막대 색 (도넛 슬라이스와 매칭). 기본 브랜드 그린
 }
 
-export function CategoryBar({ category, total, percent }: Props) {
+export function CategoryBar({ category, total, percent, color = colors.brand }: Props) {
   return (
     <View style={styles.wrap}>
       <View style={styles.top}>
@@ -28,7 +29,7 @@ export function CategoryBar({ category, total, percent }: Props) {
         </View>
       </View>
       <View style={styles.track}>
-        <View style={[styles.fill, { width: `${Math.max(percent, 2)}%` }]} />
+        <View style={[styles.fill, { width: `${Math.max(percent, 2)}%`, backgroundColor: color }]} />
       </View>
     </View>
   );
