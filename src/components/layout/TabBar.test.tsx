@@ -21,7 +21,7 @@ it('renders 4 tab labels', () => {
   const { getByText } = render(<TabBar active="home" onNavigate={() => {}} onAdd={() => {}} />);
   expect(getByText('홈')).toBeTruthy();
   expect(getByText('거래')).toBeTruthy();
-  expect(getByText('내역')).toBeTruthy();
+  expect(getByText('분석')).toBeTruthy();
   expect(getByText('더보기')).toBeTruthy();
 });
 
