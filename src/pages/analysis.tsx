@@ -6,6 +6,7 @@ import { colors } from '../constants/colors';
 import { spacing } from '../constants/spacing';
 import { PageHeader } from '../components/layout/PageHeader';
 import { TabBar } from '../components/layout/TabBar';
+import { SummaryTab } from '../components/analysis/SummaryTab';
 import { getAnalysisData } from '../constants/sampleAnalysis';
 
 export const Route = createRoute('/analysis', { component: AnalysisPage });
@@ -52,12 +53,15 @@ function AnalysisPage() {
           ))}
         </Tab>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          {/* P1~P4에서 각 탭 콘텐츠 채움 */}
-          <View style={styles.placeholder}>
-            <Txt typography="t5" color={colors.textCaption}>
-              {TABS.find((t) => t.value === tab)?.label} 준비 중 · {data.transactions.length}건
-            </Txt>
-          </View>
+          {tab === 'summary' && <SummaryTab data={data} />}
+          {/* P2~P4: 카테고리/예산/멤버 탭 */}
+          {tab !== 'summary' && (
+            <View style={styles.placeholder}>
+              <Txt typography="t5" color={colors.textCaption}>
+                {TABS.find((t) => t.value === tab)?.label} 준비 중
+              </Txt>
+            </View>
+          )}
         </ScrollView>
       </View>
       <TabBar active="analysis" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => {}} />
