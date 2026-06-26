@@ -4,14 +4,13 @@ import { ScrollView, View, Text, TextInput, Pressable, StyleSheet } from 'react-
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
+import { formatAmountInput, parseAmount } from '../lib/format';
 import { getCategoryLabel, getCategoryEmoji } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
+import { DetailHeader } from '../components/layout/DetailHeader';
 import { useBudgetStore, type BudgetLimit } from '../store/budgetStore';
 
 export const Route = createRoute('/budget-settings', { component: BudgetSettingsPage });
-
-const commas = (n: number) => (n ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '');
-const parse = (t: string) => Number(t.replace(/[^\d]/g, '')) || 0;
 
 function BudgetSettingsPage() {
   const navigation = useNavigation();
@@ -36,11 +35,7 @@ function BudgetSettingsPage() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Pressable hitSlop={8} onPress={() => navigation.goBack()}><Text style={styles.back}>‹</Text></Pressable>
-        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>예산 설정</Txt>
-        <View style={styles.headerSpacer} />
-      </View>
+      <DetailHeader title="예산 설정" />
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         {/* 전체 예산 */}
@@ -50,8 +45,8 @@ function BudgetSettingsPage() {
             <Text style={styles.won}>₩</Text>
             <TextInput
               style={styles.amountInput}
-              value={commas(totalLimit)}
-              onChangeText={(t) => setTotalLimit(parse(t))}
+              value={formatAmountInput(totalLimit)}
+              onChangeText={(t) => setTotalLimit(parseAmount(t))}
               keyboardType="number-pad"
               placeholder="0"
               placeholderTextColor={colors.textTertiary}
@@ -71,8 +66,8 @@ function BudgetSettingsPage() {
                   <Text style={styles.wonSm}>₩</Text>
                   <TextInput
                     style={styles.catInput}
-                    value={commas(l.limit)}
-                    onChangeText={(t) => updateLimit(i, parse(t))}
+                    value={formatAmountInput(l.limit)}
+                    onChangeText={(t) => updateLimit(i, parseAmount(t))}
                     keyboardType="number-pad"
                     placeholder="0"
                     placeholderTextColor={colors.textTertiary}
@@ -104,9 +99,6 @@ function BudgetSettingsPage() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 56, paddingHorizontal: spacing.screenX },
-  back: { fontSize: 28, color: colors.textPrimary },
-  headerSpacer: { width: 24 },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.section },
   field: { gap: spacing.sm },
   amountRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderBottomWidth: 2, borderBottomColor: colors.divider, paddingBottom: spacing.sm },

@@ -4,19 +4,11 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { formatWon, formatSigned } from '../../lib/format';
+import { avatarColor } from '../../constants/avatar';
 import type { AnalysisData, MemberShare } from '../../types/analysis';
 
-// 아바타 파스텔 팔레트 (멤버 순서대로)
-const AVATARS = [
-  { bg: '#E8F3FF', fg: colors.income },
-  { bg: '#E7F9F1', fg: '#12B886' },
-  { bg: '#FFEDED', fg: colors.expense },
-  { bg: '#FFF4E6', fg: '#FF922B' },
-  { bg: '#F3F0FF', fg: '#845EF7' },
-];
-
 function MemberRow({ member, index }: { member: MemberShare; index: number }) {
-  const av = AVATARS[index % AVATARS.length] ?? AVATARS[0]!;
+  const av = avatarColor(index);
   const positive = member.balance >= 0;
   return (
     <View style={styles.row}>

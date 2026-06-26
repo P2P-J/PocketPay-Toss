@@ -5,13 +5,11 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
+import { avatarColor } from '../constants/avatar';
 import { useTeamStore } from '../store/teamStore';
 import type { Member } from '../types/team';
 
 export const Route = createRoute('/members', { component: MembersPage });
-
-const AVATAR_BG = ['#E8F3FF', '#E7F9F1', '#FFEDED', '#FFF4E6', '#F3F0FF'];
-const AVATAR_FG = [colors.income, '#12B886', colors.expense, '#FF922B', '#845EF7'];
 
 function MembersPage() {
   const team = useTeamStore((s) => s.currentTeam);
@@ -32,10 +30,11 @@ function MembersPage() {
           {members.map((m, i) => {
             const name = displayName(m);
             const isOwner = m.role === 'owner';
+            const av = avatarColor(i);
             return (
               <View key={(typeof m.user === 'string' ? m.user : m.user._id) ?? i} style={styles.row}>
-                <View style={[styles.avatar, { backgroundColor: AVATAR_BG[i % AVATAR_BG.length] }]}>
-                  <Txt typography="t5" fontWeight="bold" color={AVATAR_FG[i % AVATAR_FG.length]}>{name.slice(0, 1)}</Txt>
+                <View style={[styles.avatar, { backgroundColor: av.bg }]}>
+                  <Txt typography="t5" fontWeight="bold" color={av.fg}>{name.slice(0, 1)}</Txt>
                 </View>
                 <Txt typography="t5" fontWeight="medium" color={colors.textPrimary}>{name}</Txt>
                 <View style={styles.spacer} />

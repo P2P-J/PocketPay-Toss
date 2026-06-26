@@ -9,6 +9,14 @@ export function formatSigned(amount: number, type: 'income' | 'expense'): string
   const sign = type === 'income' ? '+' : '-';
   return `${sign}₩${withCommas(amount)}`;
 }
+// 금액 입력 필드용 — 숫자에 콤마, 0은 빈 문자열(placeholder 노출)
+export function formatAmountInput(n: number): string {
+  return n ? withCommas(n) : '';
+}
+// 입력 문자열에서 숫자만 추출
+export function parseAmount(text: string): number {
+  return Number(text.replace(/[^\d]/g, '')) || 0;
+}
 // 만원 단위 약식 — 차트/캘린더 라벨용 (308,000 → "30.8만", 120,000 → "12만")
 export function formatMan(amount: number): string {
   const v = Math.abs(amount) / 10000;

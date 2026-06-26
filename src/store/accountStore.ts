@@ -1,10 +1,5 @@
 import { create } from 'zustand';
-
-export interface Account {
-  bank: string;
-  number: string;
-  holder: string;
-}
+import type { Account } from '../types/team';
 
 interface AccountState {
   account: Account;

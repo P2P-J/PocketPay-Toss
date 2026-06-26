@@ -1,5 +1,13 @@
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
+export const pad = (n: number): string => String(n).padStart(2, '0');
+
+// 오늘 날짜를 로컬 기준 YYYY-MM-DD로
+export function todayIso(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 function dayKey(iso: string): string {
   return iso.slice(0, 10); // YYYY-MM-DD
 }

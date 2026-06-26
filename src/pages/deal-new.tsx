@@ -6,20 +6,15 @@ import { Txt } from '@toss/tds-react-native';
 import { analyzeReceipt } from '../api/ocr';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
-import { formatDateGroup } from '../lib/date';
+import { formatDateGroup, todayIso } from '../lib/date';
+import { formatAmountInput, parseAmount } from '../lib/format';
 import { getCategoryLabel } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DatePickerSheet } from '../components/deal/DatePickerSheet';
+import { DetailHeader } from '../components/layout/DetailHeader';
 import { useTeamStore } from '../store/teamStore';
 
 export const Route = createRoute('/deal-new', { component: DealNewPage });
-
-const pad = (n: number) => String(n).padStart(2, '0');
-const todayIso = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-};
-const commas = (n: number) => (n ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '');
 
 function DealNewPage() {
   const navigation = useNavigation();
@@ -109,12 +104,7 @@ function DealNewPage() {
 
   return (
     <View style={styles.container}>
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <Pressable hitSlop={8} onPress={() => navigation.goBack()}><Text style={styles.back}>‹</Text></Pressable>
-        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>{editing ? '거래 수정' : '거래 등록'}</Txt>
-        <View style={styles.headerSpacer} />
-      </View>
+      <DetailHeader title={editing ? '거래 수정' : '거래 등록'} />
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         {/* 수입/지출 토글 */}
@@ -137,8 +127,8 @@ function DealNewPage() {
             <Text style={styles.won}>₩</Text>
             <TextInput
               style={styles.amountInput}
-              value={commas(amount)}
-              onChangeText={(t) => setAmount(Number(t.replace(/[^\d]/g, '')) || 0)}
+              value={formatAmountInput(amount)}
+              onChangeText={(t) => setAmount(parseAmount(t))}
               keyboardType="number-pad"
               placeholder="0"
               placeholderTextColor={colors.textTertiary}
@@ -218,9 +208,6 @@ function DealNewPage() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 56, paddingHorizontal: spacing.screenX },
-  back: { fontSize: 28, color: colors.textPrimary },
-  headerSpacer: { width: 24 },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.xl },
   toggle: { flexDirection: 'row', backgroundColor: colors.grey100, borderRadius: radius.button, padding: 4 },
   toggleItem: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 40, borderRadius: radius.button - 2 },
