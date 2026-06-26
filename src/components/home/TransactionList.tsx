@@ -7,7 +7,13 @@ import { spacing } from '../../constants/spacing';
 import { TransactionRow } from './TransactionRow';
 import type { Transaction } from '../../types/transaction';
 
-export function TransactionList({ transactions }: { transactions: Transaction[] }) {
+interface Props {
+  transactions: Transaction[];
+  onPressItem?: (tx: Transaction) => void;
+  onLongPressItem?: (tx: Transaction) => void;
+}
+
+export function TransactionList({ transactions, onPressItem, onLongPressItem }: Props) {
   if (transactions.length === 0) {
     return (
       <View style={styles.emptyWrap}>
@@ -24,7 +30,7 @@ export function TransactionList({ transactions }: { transactions: Transaction[] 
             <Txt typography="t7" fontWeight="medium" color={colors.textCaption}>{g.label}</Txt>
           </View>
           {g.items.map((tx) => (
-            <TransactionRow key={tx.id} tx={tx} />
+            <TransactionRow key={tx.id} tx={tx} onPress={onPressItem} onLongPress={onLongPressItem} />
           ))}
         </View>
       ))}

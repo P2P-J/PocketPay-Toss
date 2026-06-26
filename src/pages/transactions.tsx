@@ -9,12 +9,14 @@ import { SearchBar } from '../components/transactions/SearchBar';
 import { FilterChips, type TxFilter } from '../components/transactions/FilterChips';
 import { TransactionList } from '../components/home/TransactionList';
 import { TabBar } from '../components/layout/TabBar';
+import { useTransactionActions } from '../hooks/useTransactionActions';
 
 export const Route = createRoute('/transactions', { component: TransactionsPage });
 
 function TransactionsPage() {
   const nav = useNavigation();
   const transactions = useTeamStore((s) => s.transactions);
+  const { onEdit, onDelete } = useTransactionActions();
   const [filter, setFilter] = useState<TxFilter>('all');
   const filtered = filter === 'all' ? transactions : transactions.filter((t) => t.type === filter);
 
@@ -27,7 +29,7 @@ function TransactionsPage() {
           <FilterChips value={filter} onChange={setFilter} />
         </View>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          <TransactionList transactions={filtered} />
+          <TransactionList transactions={filtered} onPressItem={onEdit} onLongPressItem={onDelete} />
         </ScrollView>
       </View>
       <TabBar active="transactions" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => nav.navigate('/deal-new' as '/')} />

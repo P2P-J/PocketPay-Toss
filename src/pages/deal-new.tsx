@@ -1,10 +1,11 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import React, { useState } from 'react';
-import { ScrollView, View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { formatDateGroup } from '../lib/date';
+import { getCategoryLabel } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DatePickerSheet } from '../components/deal/DatePickerSheet';
 import { useTeamStore } from '../store/teamStore';
@@ -21,21 +22,38 @@ const commas = (n: number) => (n ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',
 function DealNewPage() {
   const navigation = useNavigation();
   const addTransaction = useTeamStore((s) => s.addTransaction);
+  const updateTransaction = useTeamStore((s) => s.updateTransaction);
+  const deleteTransaction = useTeamStore((s) => s.deleteTransaction);
 
-  const [type, setType] = useState<'income' | 'expense'>('expense');
-  const [amount, setAmount] = useState(0);
-  const [merchant, setMerchant] = useState('');
-  const [memo, setMemo] = useState('');
-  const [date, setDate] = useState(todayIso());
-  const [category, setCategory] = useState<string | null>(null);
+  // 진입 시점의 편집 대상 스냅샷(있으면 수정 모드) + 스토어 플래그 즉시 정리
+  const [editing] = useState(() => useTeamStore.getState().editingTransaction);
+  useEffect(() => { useTeamStore.getState().setEditingTransaction(null); }, []);
+
+  const [type, setType] = useState<'income' | 'expense'>(editing?.type ?? 'expense');
+  const [amount, setAmount] = useState(editing?.amount ?? 0);
+  const [merchant, setMerchant] = useState(editing?.merchant ?? '');
+  const [memo, setMemo] = useState(editing?.description ?? '');
+  const [date, setDate] = useState(editing?.date ?? todayIso());
+  const [category, setCategory] = useState<string | null>(editing?.category ?? null);
   const [datePicker, setDatePicker] = useState(false);
 
   const canSave = amount > 0 && !!category;
 
   const onSave = () => {
     if (!canSave) return;
-    addTransaction({ type, amount, category: category!, merchant: merchant.trim(), description: memo.trim(), date });
+    const payload = { type, amount, category: category!, merchant: merchant.trim(), description: memo.trim(), date };
+    if (editing) updateTransaction(editing.id, payload);
+    else addTransaction(payload);
     navigation.goBack();
+  };
+
+  const onDelete = () => {
+    if (!editing) return;
+    const name = editing.merchant || getCategoryLabel(editing.category);
+    Alert.alert('거래 삭제', `'${name}' 거래를 삭제하시겠습니까?`, [
+      { text: '취소', style: 'cancel' },
+      { text: '삭제', style: 'destructive', onPress: () => { deleteTransaction(editing.id); navigation.goBack(); } },
+    ]);
   };
 
   return (
@@ -43,7 +61,7 @@ function DealNewPage() {
       {/* 헤더 */}
       <View style={styles.header}>
         <Pressable hitSlop={8} onPress={() => navigation.goBack()}><Text style={styles.back}>‹</Text></Pressable>
-        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>거래 등록</Txt>
+        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>{editing ? '거래 수정' : '거래 등록'}</Txt>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -121,6 +139,13 @@ function DealNewPage() {
         <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSave} disabled={!canSave}>
           <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
         </Pressable>
+
+        {/* 거래 삭제 (수정 모드) */}
+        {editing && (
+          <Pressable style={styles.delete} onPress={onDelete}>
+            <Txt typography="t4" fontWeight="bold" color={colors.expense}>거래 삭제</Txt>
+          </Pressable>
+        )}
       </ScrollView>
 
       <DatePickerSheet visible={datePicker} value={date} onSelect={setDate} onClose={() => setDatePicker(false)} />
@@ -147,4 +172,5 @@ const styles = StyleSheet.create({
   dutch: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider },
   save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand },
   saveOff: { backgroundColor: colors.grey300 },
+  delete: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: '#FFEDED' },
 });

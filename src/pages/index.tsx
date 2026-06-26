@@ -11,6 +11,7 @@ import { BalanceCard } from '../components/home/BalanceCard';
 import { TopCategoryCard } from '../components/home/TopCategoryCard';
 import { TransactionList } from '../components/home/TransactionList';
 import { TabBar } from '../components/layout/TabBar';
+import { useTransactionActions } from '../hooks/useTransactionActions';
 
 export const Route = createRoute('/', { component: Home });
 
@@ -20,6 +21,7 @@ function Home() {
   const checkAuth = useAuthStore((s) => s.checkAuth);
   const authLoading = useAuthStore((s) => s.loading);
   const { teams, currentTeam, summary, stats, transactions, loading, error, fetchTeams, setCurrentTeam } = useTeamStore();
+  const { onEdit, onDelete } = useTransactionActions();
 
   useEffect(() => { checkAuth(); }, [checkAuth]);
   useEffect(() => { if (accessToken) fetchTeams(); }, [accessToken, fetchTeams]);
@@ -47,7 +49,7 @@ function Home() {
                 <Txt typography="t7" color={colors.textCaption}>전체보기</Txt>
               </Pressable>
             </View>
-            <TransactionList transactions={transactions} />
+            <TransactionList transactions={transactions} onPressItem={onEdit} onLongPressItem={onDelete} />
           </ScrollView>
         )}
       </View>

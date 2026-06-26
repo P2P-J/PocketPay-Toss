@@ -19,9 +19,14 @@ interface TeamState {
   loading: boolean;
   error: string | null;
 
+  editingTransaction: Transaction | null;
+
   fetchTeams: () => Promise<void>;
   setCurrentTeam: (teamId: string) => Promise<void>;
   addTransaction: (input: Omit<Transaction, 'id'>) => void;
+  updateTransaction: (id: string, input: Omit<Transaction, 'id'>) => void;
+  deleteTransaction: (id: string) => void;
+  setEditingTransaction: (tx: Transaction | null) => void;
   reset: () => void;
 }
 
@@ -54,6 +59,25 @@ function recompute(transactions: Transaction[]) {
   };
 }
 
+// 거래 목록 변경(추가/수정/삭제) 시 요약·통계까지 함께 갱신하는 state 패치
+function statePatch(transactions: Transaction[], prevStats: MonthlyStats | null) {
+  const r = recompute(transactions);
+  return {
+    transactions,
+    summary: r.summary,
+    stats: prevStats
+      ? { ...prevStats, current: { income: r.summary.income, expense: r.summary.expense }, categoryBreakdown: r.categoryBreakdown, topCategory: r.topCategory }
+      : {
+          current: { income: r.summary.income, expense: r.summary.expense },
+          previous: { income: 0, expense: 0 },
+          incomeChange: 0,
+          expenseChange: 0,
+          categoryBreakdown: r.categoryBreakdown,
+          topCategory: r.topCategory,
+        },
+  };
+}
+
 export const useTeamStore = create<TeamState>((set, get) => ({
   teams: [],
   currentTeam: null,
@@ -62,6 +86,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
   transactions: [],
   loading: false,
   error: null,
+  editingTransaction: null,
 
   fetchTeams: async () => {
     if (USE_SAMPLE) {
@@ -127,25 +152,20 @@ export const useTeamStore = create<TeamState>((set, get) => ({
 
   addTransaction: (input) => {
     const tx: Transaction = { ...input, id: `local-${++localSeq}` };
-    const transactions = [tx, ...get().transactions];
-    const r = recompute(transactions);
-    const prevStats = get().stats;
-    set({
-      transactions,
-      summary: r.summary,
-      stats: prevStats
-        ? { ...prevStats, current: { income: r.summary.income, expense: r.summary.expense }, categoryBreakdown: r.categoryBreakdown, topCategory: r.topCategory }
-        : {
-            current: { income: r.summary.income, expense: r.summary.expense },
-            previous: { income: 0, expense: 0 },
-            incomeChange: 0,
-            expenseChange: 0,
-            categoryBreakdown: r.categoryBreakdown,
-            topCategory: r.topCategory,
-          },
-    });
+    set(statePatch([tx, ...get().transactions], get().stats));
   },
 
+  updateTransaction: (id, input) => {
+    const transactions = get().transactions.map((t) => (t.id === id ? { ...input, id } : t));
+    set(statePatch(transactions, get().stats));
+  },
+
+  deleteTransaction: (id) => {
+    set(statePatch(get().transactions.filter((t) => t.id !== id), get().stats));
+  },
+
+  setEditingTransaction: (tx) => set({ editingTransaction: tx }),
+
   reset: () =>
-    set({ teams: [], currentTeam: null, summary: EMPTY_SUMMARY, stats: null, transactions: [], loading: false, error: null }),
+    set({ teams: [], currentTeam: null, summary: EMPTY_SUMMARY, stats: null, transactions: [], loading: false, error: null, editingTransaction: null }),
 }));
