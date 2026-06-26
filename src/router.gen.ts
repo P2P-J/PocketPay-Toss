@@ -10,6 +10,9 @@ import { Route as _MembersRoute } from '../pages/members';
 import { Route as _CategorySettingsRoute } from '../pages/category-settings';
 import { Route as _AccountRoute } from '../pages/account';
 import { Route as _NotificationsRoute } from '../pages/notifications';
+import { Route as _NoticesRoute } from '../pages/notices';
+import { Route as _SupportRoute } from '../pages/support';
+import { Route as _SettlementRuleRoute } from '../pages/settlement-rule';
 import { Route as _MoreRoute } from '../pages/more';
 import { Route as _IndexRoute } from '../pages/';
 
@@ -25,6 +28,9 @@ declare module '@granite-js/react-native' {
     '/category-settings': (typeof _CategorySettingsRoute)['_inputType'];
     '/account': (typeof _AccountRoute)['_inputType'];
     '/notifications': (typeof _NotificationsRoute)['_inputType'];
+    '/notices': (typeof _NoticesRoute)['_inputType'];
+    '/support': (typeof _SupportRoute)['_inputType'];
+    '/settlement-rule': (typeof _SettlementRuleRoute)['_inputType'];
     '/more': (typeof _MoreRoute)['_inputType'];
     '/': (typeof _IndexRoute)['_inputType'];
   }
@@ -40,6 +46,9 @@ declare module '@granite-js/react-native' {
     '/category-settings': (typeof _CategorySettingsRoute)['_outputType'];
     '/account': (typeof _AccountRoute)['_outputType'];
     '/notifications': (typeof _NotificationsRoute)['_outputType'];
+    '/notices': (typeof _NoticesRoute)['_outputType'];
+    '/support': (typeof _SupportRoute)['_outputType'];
+    '/settlement-rule': (typeof _SettlementRuleRoute)['_outputType'];
     '/more': (typeof _MoreRoute)['_outputType'];
     '/': (typeof _IndexRoute)['_outputType'];
   }

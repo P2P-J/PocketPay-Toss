@@ -27,7 +27,7 @@ function MorePage() {
             title="모임 관리"
             items={[
               { emoji: '👥', label: '멤버 관리', value: `${currentTeam?.members?.length ?? 0}명`, path: '/members' },
-              { emoji: '🧾', label: '정산 규칙' },
+              { emoji: '🧾', label: '정산 규칙', path: '/settlement-rule' },
               { emoji: '🏷️', label: '카테고리 설정', path: '/category-settings' },
             ]}
           />
@@ -41,8 +41,8 @@ function MorePage() {
           <MenuSection
             title="지원"
             items={[
-              { emoji: '📢', label: '공지사항' },
-              { emoji: '💬', label: '고객센터' },
+              { emoji: '📢', label: '공지사항', path: '/notices' },
+              { emoji: '💬', label: '고객센터', path: '/support' },
             ]}
           />
         </ScrollView>
