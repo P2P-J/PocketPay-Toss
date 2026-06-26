@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useNavigation } from '@granite-js/react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing } from '../../constants/spacing';
@@ -8,6 +9,7 @@ export interface MenuItem {
   emoji: string;
   label: string;
   value?: string;
+  path?: string; // 있으면 해당 화면으로 이동, 없으면 비활성(준비 중)
 }
 
 // 메뉴 진입은 추후 — 현재는 시각용(탭해도 동작 없음).
@@ -28,8 +30,10 @@ export function MenuSection({ title, items }: { title: string; items: MenuItem[]
 }
 
 function MenuRow({ item }: { item: MenuItem }) {
+  const navigation = useNavigation();
+  const onPress = item.path ? () => navigation.navigate(item.path as '/') : undefined;
   return (
-    <Pressable style={styles.row}>
+    <Pressable style={styles.row} onPress={onPress}>
       <Text allowFontScaling={false} style={styles.emoji}>{item.emoji}</Text>
       <Txt typography="t5" color={colors.textPrimary}>{item.label}</Txt>
       <View style={styles.spacer} />

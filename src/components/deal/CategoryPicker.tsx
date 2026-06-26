@@ -4,6 +4,7 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../../constants/categories';
+import { useCategoryStore } from '../../store/categoryStore';
 
 interface Props {
   type: 'income' | 'expense';
@@ -12,7 +13,10 @@ interface Props {
 }
 
 export function CategoryPicker({ type, value, onChange }: Props) {
-  const cats = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  const hidden = useCategoryStore((s) => s.hidden);
+  const all = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  // 숨긴 카테고리는 제외하되, 이미 선택된 값은 남겨둠
+  const cats = all.filter((c) => !hidden.includes(c.value) || c.value === value);
   return (
     <View style={styles.grid}>
       {cats.map((c) => {

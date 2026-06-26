@@ -2,6 +2,7 @@ import { createRoute, useNavigation } from '@granite-js/react-native';
 import React from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { useTeamStore } from '../store/teamStore';
+import { useAccountStore } from '../store/accountStore';
 import { colors } from '../constants/colors';
 import { spacing } from '../constants/spacing';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -14,6 +15,7 @@ export const Route = createRoute('/more', { component: MorePage });
 function MorePage() {
   const nav = useNavigation();
   const currentTeam = useTeamStore((s) => s.currentTeam);
+  const account = useAccountStore((s) => s.account);
 
   return (
     <View style={styles.container}>
@@ -24,16 +26,16 @@ function MorePage() {
           <MenuSection
             title="모임 관리"
             items={[
-              { emoji: '👥', label: '멤버 관리', value: `${currentTeam?.members?.length ?? 0}명` },
+              { emoji: '👥', label: '멤버 관리', value: `${currentTeam?.members?.length ?? 0}명`, path: '/members' },
               { emoji: '🧾', label: '정산 규칙' },
-              { emoji: '🏷️', label: '카테고리 설정' },
+              { emoji: '🏷️', label: '카테고리 설정', path: '/category-settings' },
             ]}
           />
           <MenuSection
             title="계좌 · 알림"
             items={[
-              { emoji: '🏦', label: '연결 계좌', value: '토스뱅크' },
-              { emoji: '🔔', label: '알림 설정' },
+              { emoji: '🏦', label: '연결 계좌', value: account.bank || '미설정', path: '/account' },
+              { emoji: '🔔', label: '알림 설정', path: '/notifications' },
             ]}
           />
           <MenuSection
