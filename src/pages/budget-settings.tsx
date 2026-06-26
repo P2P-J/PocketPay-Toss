@@ -9,15 +9,13 @@ import { getCategoryLabel, getCategoryEmoji } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { useBudgetStore, selectBudget, type BudgetLimit } from '../store/budgetStore';
-import { useTeamStore } from '../store/teamStore';
-import { getTeamId } from '../types/team';
+import { useCurrentTeamId } from '../hooks/useCurrentTeamId';
 
 export const Route = createRoute('/budget-settings', { component: BudgetSettingsPage });
 
 function BudgetSettingsPage() {
   const navigation = useNavigation();
-  const currentTeam = useTeamStore((s) => s.currentTeam);
-  const teamId = currentTeam ? getTeamId(currentTeam) : '';
+  const teamId = useCurrentTeamId();
   const config = useBudgetStore(selectBudget(teamId));
   const setBudget = useBudgetStore((s) => s.setBudget);
 

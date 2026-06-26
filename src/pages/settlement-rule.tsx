@@ -6,8 +6,7 @@ import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { useSettlementStore, selectMethod, type SettlementMethod } from '../store/settlementStore';
-import { useTeamStore } from '../store/teamStore';
-import { getTeamId } from '../types/team';
+import { useCurrentTeamId } from '../hooks/useCurrentTeamId';
 
 export const Route = createRoute('/settlement-rule', { component: SettlementRulePage });
 
@@ -18,8 +17,7 @@ const RULES: { value: SettlementMethod; label: string; desc: string }[] = [
 ];
 
 function SettlementRulePage() {
-  const currentTeam = useTeamStore((s) => s.currentTeam);
-  const teamId = currentTeam ? getTeamId(currentTeam) : '';
+  const teamId = useCurrentTeamId();
   const method = useSettlementStore(selectMethod(teamId));
   const setMethod = useSettlementStore((s) => s.setMethod);
 
