@@ -4,6 +4,7 @@ import { Route as _AboutRoute } from '../pages/about';
 import { Route as _LoginRoute } from '../pages/login';
 import { Route as _TransactionsRoute } from '../pages/transactions';
 import { Route as _AnalysisRoute } from '../pages/analysis';
+import { Route as _DealNewRoute } from '../pages/deal-new';
 import { Route as _MoreRoute } from '../pages/more';
 import { Route as _IndexRoute } from '../pages/';
 
@@ -13,6 +14,7 @@ declare module '@granite-js/react-native' {
     '/login': (typeof _LoginRoute)['_inputType'];
     '/transactions': (typeof _TransactionsRoute)['_inputType'];
     '/analysis': (typeof _AnalysisRoute)['_inputType'];
+    '/deal-new': (typeof _DealNewRoute)['_inputType'];
     '/more': (typeof _MoreRoute)['_inputType'];
     '/': (typeof _IndexRoute)['_inputType'];
   }
@@ -22,6 +24,7 @@ declare module '@granite-js/react-native' {
     '/login': (typeof _LoginRoute)['_outputType'];
     '/transactions': (typeof _TransactionsRoute)['_outputType'];
     '/analysis': (typeof _AnalysisRoute)['_outputType'];
+    '/deal-new': (typeof _DealNewRoute)['_outputType'];
     '/more': (typeof _MoreRoute)['_outputType'];
     '/': (typeof _IndexRoute)['_outputType'];
   }

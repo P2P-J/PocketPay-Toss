@@ -45,7 +45,7 @@ function MorePage() {
           />
         </ScrollView>
       </View>
-      <TabBar active="more" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => {}} />
+      <TabBar active="more" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => nav.navigate('/deal-new' as '/')} />
     </View>
   );
 }

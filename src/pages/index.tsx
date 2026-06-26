@@ -51,7 +51,7 @@ function Home() {
           </ScrollView>
         )}
       </View>
-      <TabBar active="home" onNavigate={(p) => navigation.navigate(p as '/')} onAdd={() => {}} />
+      <TabBar active="home" onNavigate={(p) => navigation.navigate(p as '/')} onAdd={() => navigation.navigate('/deal-new' as '/')} />
     </View>
   );
 }

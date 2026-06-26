@@ -30,7 +30,7 @@ function TransactionsPage() {
           <TransactionList transactions={filtered} />
         </ScrollView>
       </View>
-      <TabBar active="transactions" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => {}} />
+      <TabBar active="transactions" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => nav.navigate('/deal-new' as '/')} />
     </View>
   );
 }

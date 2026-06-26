@@ -62,7 +62,7 @@ function AnalysisPage() {
           {tab === 'member' && <MemberTab data={data} />}
         </ScrollView>
       </View>
-      <TabBar active="analysis" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => {}} />
+      <TabBar active="analysis" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => nav.navigate('/deal-new' as '/')} />
     </View>
   );
 }

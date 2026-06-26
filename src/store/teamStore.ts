@@ -21,10 +21,38 @@ interface TeamState {
 
   fetchTeams: () => Promise<void>;
   setCurrentTeam: (teamId: string) => Promise<void>;
+  addTransaction: (input: Omit<Transaction, 'id'>) => void;
   reset: () => void;
 }
 
 const EMPTY_SUMMARY: Summary = { income: 0, expense: 0, balance: 0 };
+
+// 로컬 더미 추가용 거래 id 시퀀스 (실 API 연동 시 서버 _id 사용)
+let localSeq = 0;
+
+// 거래 목록으로부터 요약/카테고리 통계 재계산 (홈·거래 반영용)
+function recompute(transactions: Transaction[]) {
+  let income = 0;
+  let expense = 0;
+  const catMap = new Map<string, number>();
+  for (const t of transactions) {
+    if (t.type === 'income') {
+      income += t.amount;
+    } else {
+      expense += t.amount;
+      catMap.set(t.category, (catMap.get(t.category) ?? 0) + t.amount);
+    }
+  }
+  const categoryBreakdown = [...catMap.entries()]
+    .map(([category, total]) => ({ category, total, percent: expense > 0 ? Math.round((total / expense) * 100) : 0 }))
+    .sort((a, b) => b.total - a.total);
+  const top = categoryBreakdown[0];
+  return {
+    summary: { income, expense, balance: income - expense },
+    categoryBreakdown,
+    topCategory: top ? { category: top.category, total: top.total } : null,
+  };
+}
 
 export const useTeamStore = create<TeamState>((set, get) => ({
   teams: [],
@@ -95,6 +123,27 @@ export const useTeamStore = create<TeamState>((set, get) => ({
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '데이터를 불러오지 못했어요.' });
     }
+  },
+
+  addTransaction: (input) => {
+    const tx: Transaction = { ...input, id: `local-${++localSeq}` };
+    const transactions = [tx, ...get().transactions];
+    const r = recompute(transactions);
+    const prevStats = get().stats;
+    set({
+      transactions,
+      summary: r.summary,
+      stats: prevStats
+        ? { ...prevStats, current: { income: r.summary.income, expense: r.summary.expense }, categoryBreakdown: r.categoryBreakdown, topCategory: r.topCategory }
+        : {
+            current: { income: r.summary.income, expense: r.summary.expense },
+            previous: { income: 0, expense: 0 },
+            incomeChange: 0,
+            expenseChange: 0,
+            categoryBreakdown: r.categoryBreakdown,
+            topCategory: r.topCategory,
+          },
+    });
   },
 
   reset: () =>
