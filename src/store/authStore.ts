@@ -5,6 +5,10 @@ import { setAuthStateGetter } from '../api/client';
 import { storage, STORAGE_KEYS } from '../lib/storage';
 import type { User } from '../types/user';
 
+// ⚠️ TEMP: 디자인 프리뷰용 로그인 우회. 토스 로그인/백엔드 실연동 전 true.
+// 실연동 시 false로 바꿔 실제 토스 로그인 게이트를 켠다. (teamStore.USE_SAMPLE와 함께 끔)
+const DEV_PREVIEW = true;
+
 interface AuthState {
   user: User | null;
   accessToken: string | null;
@@ -46,6 +50,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
         const savedAccess = await storage.getItem(STORAGE_KEYS.accessToken);
         const savedRefresh = await storage.getItem(STORAGE_KEYS.refreshToken);
         if (!savedAccess) {
+          // ⚠️ 프리뷰: 토큰 없으면 임시 토큰으로 게이트 통과(PC/더미에서 화면 확인용)
+          if (DEV_PREVIEW) {
+            set({ accessToken: 'dev-preview', loading: false });
+            return;
+          }
           set({ loading: false });
           return;
         }

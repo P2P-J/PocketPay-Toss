@@ -12,7 +12,7 @@ export interface MenuItem {
   path?: string; // 있으면 해당 화면으로 이동, 없으면 비활성(준비 중)
 }
 
-// 메뉴 진입은 추후 — 현재는 시각용(탭해도 동작 없음).
+// path가 있는 항목은 해당 화면으로 이동, 없으면 비활성.
 export function MenuSection({ title, items }: { title: string; items: MenuItem[] }) {
   return (
     <View style={styles.section}>

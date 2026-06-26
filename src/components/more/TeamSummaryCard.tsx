@@ -1,21 +1,23 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useNavigation } from '@granite-js/react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import type { Team } from '../../types/team';
 
 export function TeamSummaryCard({ team }: { team: Team | null }) {
+  const navigation = useNavigation();
   const name = team?.name ?? '작은 모임';
   const memberCount = team?.members?.length ?? 0;
   return (
-    <Pressable style={styles.card}>
+    <Pressable style={styles.card} onPress={() => navigation.navigate('/members' as '/')}>
       <View style={styles.icon}>
         <Text allowFontScaling={false} style={styles.emoji}>👖</Text>
       </View>
       <View style={styles.texts}>
         <Txt typography="t4" fontWeight="bold" color={colors.textPrimary} numberOfLines={1}>{name}</Txt>
-        <Txt typography="t7" color={colors.textCaption}>멤버 {memberCount}명 · 2024년 3월 개설</Txt>
+        <Txt typography="t7" color={colors.textCaption}>멤버 {memberCount}명</Txt>
       </View>
       <Text style={styles.chevron}>›</Text>
     </Pressable>
