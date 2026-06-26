@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   centerSlot: { width: FAB_SIZE + spacing.lg },
   fab: {
     position: 'absolute',
-    top: -FAB_SIZE / 2,
+    top: -FAB_SIZE / 4,
     alignSelf: 'center',
     left: '50%',
     marginLeft: -FAB_SIZE / 2,
