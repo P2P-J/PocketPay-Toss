@@ -4,10 +4,10 @@ import { authApi } from '../api/auth';
 import { setAuthStateGetter } from '../api/client';
 import { storage, STORAGE_KEYS } from '../lib/storage';
 import type { User } from '../types/user';
+import { PREVIEW_MODE } from '../constants/config';
 
-// ⚠️ 디자인 프리뷰용 로그인 우회. __DEV__로 묶어 프로덕션 빌드에선 자동으로 꺼짐(인증 우회 출시 방지).
-// 실연동 테스트 시 dev에서 끄려면 뒤의 true→false. (teamStore.USE_SAMPLE와 함께)
-const DEV_PREVIEW = __DEV__ && true;
+// 프리뷰 모드면 로그인 우회(config.PREVIEW_MODE 한 곳에서 토글)
+const DEV_PREVIEW = PREVIEW_MODE;
 
 interface AuthState {
   user: User | null;

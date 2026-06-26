@@ -6,11 +6,12 @@ import { dealToTransaction, type Transaction } from '../types/transaction';
 import type { Team, TeamCategory, TeamDisplayMode, TeamAccountMode } from '../types/team';
 import type { Summary, MonthlyStats } from '../types/stats';
 import { pad } from '../lib/date';
+import { PREVIEW_MODE } from '../constants/config';
 // ⚠️ TEMP — 디자인 프리뷰용 샘플 데이터. 디자인 확정/Phase 3 후 제거.
 import { sampleTeams, sampleTransactions } from '../constants/sampleData';
 
-// ⚠️ 디자인 프리뷰용 샘플 데이터. __DEV__로 묶어 프로덕션에선 자동 off(더미 노출 방지). 실연동 테스트 시 true→false.
-const USE_SAMPLE = __DEV__ && true;
+// 프리뷰 모드면 샘플 데이터 사용(config.PREVIEW_MODE 한 곳에서 토글)
+const USE_SAMPLE = PREVIEW_MODE;
 
 interface TeamState {
   teams: Team[];
