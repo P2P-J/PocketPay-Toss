@@ -26,16 +26,15 @@ export const sampleStats: MonthlyStats = {
   expenseChange: 100,
   categoryBreakdown: [
     { category: 'activity', total: 285000 },
-    { category: 'cafe', total: 23000 },
+    { category: 'meal', total: 23000 },
   ],
   topCategory: { category: 'activity', total: 285000 },
 };
 
+// 거래/분석 mockup과 동일한 4건 (수입 620,000 / 지출 308,000 / 순수익 312,000)
 export const sampleTransactions: Transaction[] = [
   { id: 'd1', merchant: '디즈니랜드 1일권(3인)', type: 'expense', category: 'activity', amount: 285000, date: '2026-06-26', description: '' },
-  { id: 'd2', merchant: '학교 지원금', type: 'income', category: 'donation', amount: 500000, date: '2026-06-12', description: '' },
-  { id: 'd3', merchant: '이상이 회비', type: 'income', category: 'dues', amount: 20000, date: '2026-06-01', description: '' },
-  { id: 'd4', merchant: '김거을 회비', type: 'income', category: 'dues', amount: 20000, date: '2026-06-01', description: '' },
-  { id: 'd5', merchant: '스타벅스', type: 'expense', category: 'cafe', amount: 12000, date: '2026-06-01', description: '' },
-  { id: 'd6', merchant: '동아리방 간식', type: 'expense', category: 'snack', amount: 11000, date: '2026-06-01', description: '' },
+  { id: 'd2', merchant: '정기 모임 식사', type: 'expense', category: 'meal', amount: 23000, date: '2026-06-20', description: '' },
+  { id: 'd3', merchant: '학교 지원금', type: 'income', category: 'donation', amount: 500000, date: '2026-06-12', description: '' },
+  { id: 'd4', merchant: '6월 회비', type: 'income', category: 'membership', amount: 120000, date: '2026-06-03', description: '' },
 ];
