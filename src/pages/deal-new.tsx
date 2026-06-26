@@ -1,7 +1,9 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
+import { openCamera, fetchAlbumPhotos, OpenCameraPermissionError, type ImageResponse } from '@apps-in-toss/framework';
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TextInput, Pressable, Image, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
+import { analyzeReceipt } from '../api/ocr';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { formatDateGroup } from '../lib/date';
@@ -36,15 +38,64 @@ function DealNewPage() {
   const [date, setDate] = useState(editing?.date ?? todayIso());
   const [category, setCategory] = useState<string | null>(editing?.category ?? null);
   const [datePicker, setDatePicker] = useState(false);
+  const [receiptUri, setReceiptUri] = useState<string | null>(editing?.receiptUrl ?? null);
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(editing?.receiptUrl ?? null);
+  const [ocrLoading, setOcrLoading] = useState(false);
 
   const canSave = amount > 0 && !!category;
 
   const onSave = () => {
     if (!canSave) return;
-    const payload = { type, amount, category: category!, merchant: merchant.trim(), description: memo.trim(), date };
+    const payload = { type, amount, category: category!, merchant: merchant.trim(), description: memo.trim(), date, receiptUrl: receiptUrl ?? undefined };
     if (editing) updateTransaction(editing.id, payload);
     else addTransaction(payload);
     navigation.goBack();
+  };
+
+  // OCR: 촬영/앨범 → 분석은 백그라운드(논블로킹) → 거래처·금액·날짜 자동 채움
+  const runOcr = async (uri: string) => {
+    setOcrLoading(true);
+    try {
+      const r = await analyzeReceipt({ uri });
+      if (r.storeInfo && r.storeInfo !== 'N/A') setMerchant(r.storeInfo);
+      if (r.price > 0) setAmount(r.price);
+      if (r.date) setDate(r.date);
+      if (r.receiptUrl) setReceiptUrl(r.receiptUrl);
+    } catch (e) {
+      Alert.alert('영수증 분석 실패', e instanceof Error ? e.message : '다시 시도해주세요.');
+    } finally {
+      setOcrLoading(false);
+    }
+  };
+
+  const handleImage = (img: ImageResponse) => {
+    setReceiptUri(img.dataUri);
+    void runOcr(img.dataUri);
+  };
+
+  const capture = async () => {
+    try {
+      handleImage(await openCamera({ maxWidth: 1600 }));
+    } catch (e) {
+      if (e instanceof OpenCameraPermissionError) Alert.alert('권한 필요', '설정에서 카메라 권한을 허용해주세요.');
+    }
+  };
+
+  const pickAlbum = async () => {
+    try {
+      const imgs = await fetchAlbumPhotos({ maxCount: 1, maxWidth: 1600 });
+      if (imgs[0]) handleImage(imgs[0]);
+    } catch {
+      Alert.alert('앨범을 열 수 없어요', '설정에서 사진 접근 권한을 확인해주세요.');
+    }
+  };
+
+  const onAttach = () => {
+    Alert.alert('영수증 첨부', undefined, [
+      { text: '촬영하기', onPress: capture },
+      { text: '앨범에서 선택', onPress: pickAlbum },
+      { text: '취소', style: 'cancel' },
+    ]);
   };
 
   const onDelete = () => {
@@ -121,13 +172,25 @@ function DealNewPage() {
           <CategoryPicker type={type} value={category} onChange={setCategory} />
         </View>
 
-        {/* 영수증 (OCR — v2) */}
+        {/* 영수증 (촬영/앨범 → OCR 자동채움) */}
         <View style={styles.field}>
           <Txt typography="t7" color={colors.textSecondary}>영수증</Txt>
-          <Pressable style={styles.receiptBtn}>
-            <Text style={styles.receiptEmoji}>📷</Text>
-            <Txt typography="t5" fontWeight="medium" color={colors.textSecondary}>영수증 첨부하기</Txt>
-          </Pressable>
+          {receiptUri ? (
+            <Pressable style={styles.receiptPreview} onPress={onAttach}>
+              <Image source={{ uri: receiptUri }} style={styles.receiptImg} resizeMode="cover" />
+              {ocrLoading && (
+                <View style={styles.ocrOverlay}>
+                  <ActivityIndicator color={colors.white} />
+                  <Txt typography="t7" fontWeight="medium" color={colors.white}>영수증 분석 중…</Txt>
+                </View>
+              )}
+            </Pressable>
+          ) : (
+            <Pressable style={styles.receiptBtn} onPress={onAttach}>
+              <Text style={styles.receiptEmoji}>📷</Text>
+              <Txt typography="t5" fontWeight="medium" color={colors.textSecondary}>영수증 첨부하기</Txt>
+            </Pressable>
+          )}
         </View>
 
         {/* 이 거래로 더치페이 (v2) */}
@@ -169,6 +232,9 @@ const styles = StyleSheet.create({
   box: { backgroundColor: colors.grey100, borderRadius: radius.button, paddingHorizontal: spacing.lg, height: 52, justifyContent: 'center', fontSize: 16, color: colors.textPrimary },
   receiptBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, height: 52, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider, borderStyle: 'dashed' },
   receiptEmoji: { fontSize: 18, lineHeight: 23 },
+  receiptPreview: { borderRadius: radius.button, overflow: 'hidden', backgroundColor: colors.grey100 },
+  receiptImg: { width: '100%', height: 220 },
+  ocrOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: spacing.sm, backgroundColor: 'rgba(0,0,0,0.45)' },
   dutch: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider },
   save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand },
   saveOff: { backgroundColor: colors.grey300 },
