@@ -16,7 +16,7 @@ function MemberRow({ member, index }: { member: MemberShare; index: number }) {
         <Txt typography="t5" fontWeight="bold" color={av.fg}>{member.initial}</Txt>
       </View>
       <View style={styles.info}>
-        <Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>{member.name}</Txt>
+        <Txt typography="t5" fontWeight="bold" color={colors.textPrimary} numberOfLines={1}>{member.name}</Txt>
         <Txt typography="t7" color={colors.textCaption}>낸 금액 {formatWon(member.paid)}</Txt>
       </View>
       <View style={[styles.badge, { backgroundColor: positive ? '#E7F9F1' : '#FFEDED' }]}>

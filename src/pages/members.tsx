@@ -36,7 +36,7 @@ function MembersPage() {
                 <View style={[styles.avatar, { backgroundColor: av.bg }]}>
                   <Txt typography="t5" fontWeight="bold" color={av.fg}>{name.slice(0, 1)}</Txt>
                 </View>
-                <Txt typography="t5" fontWeight="medium" color={colors.textPrimary}>{name}</Txt>
+                <Txt typography="t5" fontWeight="medium" color={colors.textPrimary} numberOfLines={1} style={styles.name}>{name}</Txt>
                 <View style={styles.spacer} />
                 <View style={[styles.badge, isOwner && styles.badgeOwner]}>
                   <Txt typography="t7" fontWeight="bold" color={isOwner ? colors.brand : colors.textCaption}>{isOwner ? '방장' : '멤버'}</Txt>
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
   list: { gap: spacing.lg },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  name: { flexShrink: 1 },
   spacer: { flex: 1 },
   badge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.pill, backgroundColor: colors.grey100 },
   badgeOwner: { backgroundColor: '#E7F9F1' },

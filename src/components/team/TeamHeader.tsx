@@ -19,7 +19,7 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
   return (
     <View style={styles.header}>
       <Pressable style={styles.left} onPress={() => setTeamSheet(true)}>
-        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>{currentTeam?.name ?? '작은 모임'}</Txt>
+        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary} numberOfLines={1} style={styles.teamName}>{currentTeam?.name ?? '작은 모임'}</Txt>
         <Icon name="icon-arrow-down-mono" size={20} color={colors.textSecondary} />
       </Pressable>
       <Pressable style={styles.members} onPress={() => setMemberSheet(true)}>
@@ -44,6 +44,7 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', height: 56 },
   left: { flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1 },
+  teamName: { flexShrink: 1 },
   members: {
     width: 40,
     height: 40,

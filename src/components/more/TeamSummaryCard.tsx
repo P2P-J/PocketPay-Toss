@@ -14,7 +14,7 @@ export function TeamSummaryCard({ team }: { team: Team | null }) {
         <Text allowFontScaling={false} style={styles.emoji}>👖</Text>
       </View>
       <View style={styles.texts}>
-        <Txt typography="t4" fontWeight="bold" color={colors.textPrimary}>{name}</Txt>
+        <Txt typography="t4" fontWeight="bold" color={colors.textPrimary} numberOfLines={1}>{name}</Txt>
         <Txt typography="t7" color={colors.textCaption}>멤버 {memberCount}명 · 2024년 3월 개설</Txt>
       </View>
       <Text style={styles.chevron}>›</Text>

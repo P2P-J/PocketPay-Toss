@@ -32,7 +32,7 @@ export function TeamSelectSheet({ visible, teams, currentTeamId, onSelect, onClo
                 onClose();
               }}
             >
-              <Text style={[styles.name, active && styles.active]}>{team.name}</Text>
+              <Text style={[styles.name, active && styles.active]} numberOfLines={1}>{team.name}</Text>
               {active && <Text style={styles.check}>✓</Text>}
             </Pressable>
           );
