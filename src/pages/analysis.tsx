@@ -1,5 +1,5 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ScrollView, View, Pressable, Text, StyleSheet } from 'react-native';
 import { Txt, Tab } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
@@ -24,15 +24,16 @@ const TABS: { value: TabValue; label: string }[] = [
   { value: 'member', label: '멤버' },
 ];
 
-const BASE = { y: 2026, m: 6 };
-
 function AnalysisPage() {
   const nav = useNavigation();
-  const [ym, setYm] = useState(BASE);
+  const [ym, setYm] = useState(() => {
+    const now = new Date();
+    return { y: now.getFullYear(), m: now.getMonth() + 1 };
+  });
   const [tab, setTab] = useState<TabValue>('summary');
   const transactions = useTeamStore((s) => s.transactions);
   const budgetConfig = useBudgetStore((s) => s.config);
-  const data = buildAnalysisData(ym.y, ym.m, transactions, budgetConfig);
+  const data = useMemo(() => buildAnalysisData(ym.y, ym.m, transactions, budgetConfig), [ym, transactions, budgetConfig]);
 
   const shift = (delta: number) =>
     setYm(({ y, m }) => {
