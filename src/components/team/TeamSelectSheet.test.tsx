@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import type { Team } from '../../types/team';
+
+jest.mock('@granite-js/react-native', () => ({ useNavigation: () => ({ navigate: jest.fn() }) }));
+
 import { TeamSelectSheet } from './TeamSelectSheet';
 
 const teams: Team[] = [

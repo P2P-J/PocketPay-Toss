@@ -3,7 +3,7 @@ import { teamApi } from '../api/team';
 import { dealApi } from '../api/deal';
 import { getTeamId } from '../types/team';
 import { dealToTransaction, type Transaction } from '../types/transaction';
-import type { Team } from '../types/team';
+import type { Team, TeamCategory, TeamDisplayMode, TeamAccountMode } from '../types/team';
 import type { Summary, MonthlyStats } from '../types/stats';
 import { pad } from '../lib/date';
 // ⚠️ TEMP — 디자인 프리뷰용 샘플 데이터. 디자인 확정/Phase 3 후 제거.
@@ -24,6 +24,7 @@ interface TeamState {
 
   fetchTeams: () => Promise<void>;
   setCurrentTeam: (teamId: string) => Promise<void>;
+  createTeam: (input: NewTeamInput) => void;
   addTransaction: (input: Omit<Transaction, 'id'>) => void;
   updateTransaction: (id: string, input: Omit<Transaction, 'id'>) => void;
   deleteTransaction: (id: string) => void;
@@ -33,8 +34,21 @@ interface TeamState {
 
 const EMPTY_SUMMARY: Summary = { income: 0, expense: 0, balance: 0 };
 
-// 로컬 더미 추가용 거래 id 시퀀스 (실 API 연동 시 서버 _id 사용)
+// 새 모임 생성 입력 (백엔드 Team 생성 페이로드와 동일 필드)
+export interface NewTeamInput {
+  name: string;
+  description?: string;
+  category: TeamCategory;
+  displayMode: TeamDisplayMode;
+  accountMode: TeamAccountMode;
+  feeEnabled: boolean;
+  feeAmount?: number;
+  feeDueDay?: number;
+}
+
+// 로컬 더미 추가용 시퀀스 (실 API 연동 시 서버 _id 사용)
 let localSeq = 0;
+let localTeamSeq = 0;
 
 const changePct = (cur: number, prev: number) => (prev > 0 ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0);
 
@@ -175,6 +189,24 @@ export const useTeamStore = create<TeamState>((set, get) => ({
 
   deleteTransaction: (id) => {
     set(statePatch(get().transactions.filter((t) => t.id !== id)));
+  },
+
+  createTeam: (input) => {
+    // ⚠️ 로컬 생성(세션). 실 API 연동 시 POST /teams + 생성자 owner는 백엔드가 처리.
+    const team: Team = {
+      _id: `local-team-${++localTeamSeq}`,
+      name: input.name,
+      description: input.description,
+      category: input.category,
+      displayMode: input.displayMode,
+      accountMode: input.accountMode,
+      feeEnabled: input.feeEnabled,
+      feeAmount: input.feeEnabled ? input.feeAmount : undefined,
+      feeDueDay: input.feeEnabled ? input.feeDueDay : undefined,
+      members: [{ user: { _id: 'me', name: '나', nickname: '나' }, role: 'owner' }],
+    };
+    // 새 모임은 거래가 없으므로 빈 상태로 전환
+    set({ teams: [...get().teams, team], currentTeam: team, ...statePatch([]) });
   },
 
   setEditingTransaction: (tx) => set({ editingTransaction: tx }),

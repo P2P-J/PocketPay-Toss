@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import type { Team } from '../../types/team';
+
+jest.mock('@granite-js/react-native', () => ({ useNavigation: () => ({ navigate: jest.fn() }) }));
+
 import { TeamHeader } from './TeamHeader';
 
 // TDS(@toss/tds-react-native)는 jest import 시점에 네이티브 의존으로 크래시하므로 Icon/Txt를 목으로 대체.
