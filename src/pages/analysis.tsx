@@ -10,6 +10,7 @@ import { SummaryTab } from '../components/analysis/SummaryTab';
 import { CategoryTab } from '../components/analysis/CategoryTab';
 import { BudgetTab } from '../components/analysis/BudgetTab';
 import { MemberTab } from '../components/analysis/MemberTab';
+import { CenterNotice } from '../components/common/CenterNotice';
 import { useTeamStore } from '../store/teamStore';
 import { useBudgetStore, selectBudget } from '../store/budgetStore';
 import { getTeamId } from '../types/team';
@@ -33,6 +34,7 @@ function AnalysisPage() {
   });
   const [tab, setTab] = useState<TabValue>('summary');
   const transactions = useTeamStore((s) => s.transactions);
+  const error = useTeamStore((s) => s.error);
   const currentTeam = useTeamStore((s) => s.currentTeam);
   const teamId = currentTeam ? getTeamId(currentTeam) : '';
   const budgetConfig = useBudgetStore(selectBudget(teamId));
@@ -54,24 +56,30 @@ function AnalysisPage() {
     <View style={styles.container}>
       <View style={styles.body}>
         <PageHeader title="분석" />
-        {/* 월 선택 — 모든 탭에 공통 적용 */}
-        <View style={styles.monthNav}>
-          <Pressable hitSlop={8} onPress={() => shift(-1)}><Text style={styles.arrow}>‹</Text></Pressable>
-          <Txt typography="t4" fontWeight="bold" color={colors.textPrimary}>{ym.y}년 {ym.m}월</Txt>
-          <Pressable hitSlop={8} onPress={() => shift(1)}><Text style={styles.arrow}>›</Text></Pressable>
-        </View>
-        {/* 상단 섹션 탭 */}
-        <Tab value={tab} onChange={(v) => setTab(v as TabValue)}>
-          {TABS.map((t) => (
-            <Tab.Item key={t.value} value={t.value}>{t.label}</Tab.Item>
-          ))}
-        </Tab>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          {tab === 'summary' && <SummaryTab data={data} />}
-          {tab === 'category' && <CategoryTab data={data} />}
-          {tab === 'budget' && <BudgetTab data={data} />}
-          {tab === 'member' && <MemberTab data={data} />}
-        </ScrollView>
+        {error ? (
+          <CenterNotice message={error} tone="error" />
+        ) : (
+          <>
+            {/* 월 선택 — 모든 탭에 공통 적용 */}
+            <View style={styles.monthNav}>
+              <Pressable hitSlop={8} onPress={() => shift(-1)}><Text style={styles.arrow}>‹</Text></Pressable>
+              <Txt typography="t4" fontWeight="bold" color={colors.textPrimary}>{ym.y}년 {ym.m}월</Txt>
+              <Pressable hitSlop={8} onPress={() => shift(1)}><Text style={styles.arrow}>›</Text></Pressable>
+            </View>
+            {/* 상단 섹션 탭 */}
+            <Tab value={tab} onChange={(v) => setTab(v as TabValue)}>
+              {TABS.map((t) => (
+                <Tab.Item key={t.value} value={t.value}>{t.label}</Tab.Item>
+              ))}
+            </Tab>
+            <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+              {tab === 'summary' && <SummaryTab data={data} />}
+              {tab === 'category' && <CategoryTab data={data} />}
+              {tab === 'budget' && <BudgetTab data={data} />}
+              {tab === 'member' && <MemberTab data={data} />}
+            </ScrollView>
+          </>
+        )}
       </View>
       <TabBar active="analysis" onNavigate={(p) => nav.navigate(p as '/')} onAdd={() => nav.navigate('/deal-new' as '/')} />
     </View>

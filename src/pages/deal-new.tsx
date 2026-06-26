@@ -12,6 +12,7 @@ import { getCategoryLabel } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DatePickerSheet } from '../components/deal/DatePickerSheet';
 import { DetailHeader } from '../components/layout/DetailHeader';
+import { FormField } from '../components/common/FormField';
 import { useTeamStore } from '../store/teamStore';
 
 export const Route = createRoute('/deal-new', { component: DealNewPage });
@@ -77,6 +78,7 @@ function DealNewPage() {
       handleImage(await openCamera({ maxWidth: 1600 }));
     } catch (e) {
       if (e instanceof OpenCameraPermissionError) Alert.alert('권한 필요', '설정에서 카메라 권한을 허용해주세요.');
+      else Alert.alert('촬영 실패', '카메라를 열 수 없어요. 다시 시도해주세요.');
     }
   };
 
@@ -141,16 +143,10 @@ function DealNewPage() {
         </View>
 
         {/* 거래처 */}
-        <View style={styles.field}>
-          <Txt typography="t7" color={colors.textSecondary}>거래처 (선택)</Txt>
-          <TextInput style={styles.box} value={merchant} onChangeText={setMerchant} placeholder="예: 밥집" placeholderTextColor={colors.textTertiary} />
-        </View>
+        <FormField label="거래처 (선택)" value={merchant} onChangeText={setMerchant} placeholder="예: 밥집" maxLength={50} />
 
         {/* 메모 */}
-        <View style={styles.field}>
-          <Txt typography="t7" color={colors.textSecondary}>메모 (선택)</Txt>
-          <TextInput style={styles.box} value={memo} onChangeText={setMemo} placeholder="메모를 입력하세요" placeholderTextColor={colors.textTertiary} />
-        </View>
+        <FormField label="메모 (선택)" value={memo} onChangeText={setMemo} placeholder="메모를 입력하세요" maxLength={100} />
 
         {/* 날짜 */}
         <View style={styles.field}>

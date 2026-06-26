@@ -9,7 +9,8 @@ import { pad } from '../lib/date';
 // ⚠️ TEMP — 디자인 프리뷰용 샘플 데이터. 디자인 확정/Phase 3 후 제거.
 import { sampleTeams, sampleTransactions } from '../constants/sampleData';
 
-const USE_SAMPLE = true; // ⚠️ TEMP: 디자인 프리뷰. 실서비스 전 false/제거.
+// ⚠️ 디자인 프리뷰용 샘플 데이터. __DEV__로 묶어 프로덕션에선 자동 off(더미 노출 방지). 실연동 테스트 시 true→false.
+const USE_SAMPLE = __DEV__ && true;
 
 interface TeamState {
   teams: Team[];

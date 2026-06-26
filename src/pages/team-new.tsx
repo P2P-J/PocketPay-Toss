@@ -6,6 +6,7 @@ import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { formatAmountInput, parseAmount } from '../lib/format';
 import { DetailHeader } from '../components/layout/DetailHeader';
+import { FormField } from '../components/common/FormField';
 import { useTeamStore } from '../store/teamStore';
 import type { TeamCategory, TeamDisplayMode, TeamAccountMode } from '../types/team';
 
@@ -39,7 +40,9 @@ function TeamNewPage() {
   const [feeAmount, setFeeAmount] = useState(0);
   const [feeDueDay, setFeeDueDay] = useState(0);
 
-  const canCreate = name.trim().length > 0;
+  // 회비 켜면 금액>0 + 납부일 1~31 필수
+  const feeValid = !feeEnabled || (feeAmount > 0 && feeDueDay >= 1 && feeDueDay <= 31);
+  const canCreate = name.trim().length > 0 && feeValid;
 
   const onCreate = () => {
     if (!canCreate) return;
@@ -60,17 +63,8 @@ function TeamNewPage() {
     <View style={styles.container}>
       <DetailHeader title="새 모임" />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-        {/* 이름 */}
-        <View style={styles.field}>
-          <Txt typography="t7" color={colors.textSecondary}>모임 이름</Txt>
-          <TextInput style={styles.box} value={name} onChangeText={setName} placeholder="예: 청바지" placeholderTextColor={colors.textTertiary} maxLength={50} />
-        </View>
-
-        {/* 소개 */}
-        <View style={styles.field}>
-          <Txt typography="t7" color={colors.textSecondary}>소개 (선택)</Txt>
-          <TextInput style={styles.box} value={description} onChangeText={setDescription} placeholder="모임을 한 줄로 소개해요" placeholderTextColor={colors.textTertiary} maxLength={200} />
-        </View>
+        <FormField label="모임 이름" value={name} onChangeText={setName} placeholder="예: 청바지" maxLength={50} />
+        <FormField label="소개 (선택)" value={description} onChangeText={setDescription} placeholder="모임을 한 줄로 소개해요" maxLength={200} />
 
         {/* 성격 */}
         <View style={styles.field}>
@@ -130,7 +124,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.lg },
   field: { gap: spacing.sm },
-  box: { backgroundColor: colors.grey100, borderRadius: radius.button, paddingHorizontal: spacing.lg, height: 52, justifyContent: 'center', fontSize: 16, color: colors.textPrimary },
   seg: { flexDirection: 'row', backgroundColor: colors.grey100, borderRadius: radius.button, padding: 4 },
   segItem: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 44, borderRadius: radius.button - 2 },
   segItemOn: { backgroundColor: colors.white },

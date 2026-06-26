@@ -5,9 +5,9 @@ import { setAuthStateGetter } from '../api/client';
 import { storage, STORAGE_KEYS } from '../lib/storage';
 import type { User } from '../types/user';
 
-// ⚠️ TEMP: 디자인 프리뷰용 로그인 우회. 토스 로그인/백엔드 실연동 전 true.
-// 실연동 시 false로 바꿔 실제 토스 로그인 게이트를 켠다. (teamStore.USE_SAMPLE와 함께 끔)
-const DEV_PREVIEW = true;
+// ⚠️ 디자인 프리뷰용 로그인 우회. __DEV__로 묶어 프로덕션 빌드에선 자동으로 꺼짐(인증 우회 출시 방지).
+// 실연동 테스트 시 dev에서 끄려면 뒤의 true→false. (teamStore.USE_SAMPLE와 함께)
+const DEV_PREVIEW = __DEV__ && true;
 
 interface AuthState {
   user: User | null;
@@ -40,7 +40,12 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
     setAccessToken: async (token) => {
       set({ accessToken: token });
-      await storage.setItem(STORAGE_KEYS.accessToken, token);
+      // 저장 실패가 토큰 갱신(401 재시도) 흐름을 깨지 않도록 삼킴
+      try {
+        await storage.setItem(STORAGE_KEYS.accessToken, token);
+      } catch {
+        // 저장소 실패 — 메모리 토큰은 유지됨
+      }
     },
 
     // 앱 시작 시 저장된 토큰으로 세션 복구
@@ -91,8 +96,12 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     logout: async () => {
-      await storage.removeItem(STORAGE_KEYS.accessToken);
-      await storage.removeItem(STORAGE_KEYS.refreshToken);
+      try {
+        await storage.removeItem(STORAGE_KEYS.accessToken);
+        await storage.removeItem(STORAGE_KEYS.refreshToken);
+      } catch {
+        // 저장소 제거 실패해도 메모리 세션은 비움
+      }
       set({ user: null, accessToken: null, refreshToken: null, error: null });
     },
   };

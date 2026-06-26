@@ -13,9 +13,10 @@ export function formatSigned(amount: number, type: 'income' | 'expense'): string
 export function formatAmountInput(n: number): string {
   return n ? withCommas(n) : '';
 }
-// 입력 문자열에서 숫자만 추출
+// 입력 문자열에서 숫자만 추출 (음수 불가, 상한 1억으로 클램프 — 오버플로우/오입력 방지)
+const MAX_AMOUNT = 100_000_000;
 export function parseAmount(text: string): number {
-  return Number(text.replace(/[^\d]/g, '')) || 0;
+  return Math.min(Number(text.replace(/[^\d]/g, '')) || 0, MAX_AMOUNT);
 }
 // 만원 단위 약식 — 차트/캘린더 라벨용 (308,000 → "30.8만", 120,000 → "12만")
 export function formatMan(amount: number): string {
