@@ -11,6 +11,7 @@ import { CategoryTab } from '../components/analysis/CategoryTab';
 import { BudgetTab } from '../components/analysis/BudgetTab';
 import { MemberTab } from '../components/analysis/MemberTab';
 import { useTeamStore } from '../store/teamStore';
+import { useBudgetStore } from '../store/budgetStore';
 import { buildAnalysisData } from '../lib/analysis';
 
 export const Route = createRoute('/analysis', { component: AnalysisPage });
@@ -30,7 +31,8 @@ function AnalysisPage() {
   const [ym, setYm] = useState(BASE);
   const [tab, setTab] = useState<TabValue>('summary');
   const transactions = useTeamStore((s) => s.transactions);
-  const data = buildAnalysisData(ym.y, ym.m, transactions);
+  const budgetConfig = useBudgetStore((s) => s.config);
+  const data = buildAnalysisData(ym.y, ym.m, transactions, budgetConfig);
 
   const shift = (delta: number) =>
     setYm(({ y, m }) => {

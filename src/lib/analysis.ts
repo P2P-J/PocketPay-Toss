@@ -1,5 +1,6 @@
 import type { Transaction } from '../types/transaction';
 import type { AnalysisData, CategorySlice, MonthlyTrendPoint } from '../types/analysis';
+import type { BudgetConfig } from '../store/budgetStore';
 import { SAMPLE_BUDGET, SAMPLE_SPLIT } from '../constants/sampleAnalysis';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -19,7 +20,12 @@ function monthExpense(all: Transaction[], y: number, m: number): number {
 
 // teamStore 거래에서 분석 화면 데이터를 파생한다.
 // 거래로부터 못 구하는 예산 한도·멤버 분담만 더미(sampleAnalysis) 사용.
-export function buildAnalysisData(year: number, month: number, all: Transaction[]): AnalysisData {
+export function buildAnalysisData(
+  year: number,
+  month: number,
+  all: Transaction[],
+  budgetConfig: BudgetConfig = SAMPLE_BUDGET,
+): AnalysisData {
   const cur = ymStr(year, month);
   const txs = all.filter((t) => t.date.slice(0, 7) === cur);
 
@@ -51,8 +57,8 @@ export function buildAnalysisData(year: number, month: number, all: Transaction[
 
   const budget = {
     totalSpent: expense,
-    totalLimit: SAMPLE_BUDGET.totalLimit,
-    categories: SAMPLE_BUDGET.limits.map((l) => ({ category: l.category, spent: catMap.get(l.category) ?? 0, limit: l.limit })),
+    totalLimit: budgetConfig.totalLimit,
+    categories: budgetConfig.limits.map((l) => ({ category: l.category, spent: catMap.get(l.category) ?? 0, limit: l.limit })),
   };
 
   return {

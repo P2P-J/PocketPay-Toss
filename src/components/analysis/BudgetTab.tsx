@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useNavigation } from '@granite-js/react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
@@ -43,10 +44,19 @@ function CategoryBudgetRow({ item }: { item: CategoryBudget }) {
 }
 
 export function BudgetTab({ data }: { data: AnalysisData }) {
+  const navigation = useNavigation();
   const { budget } = data;
+  const goSettings = () => navigation.navigate('/budget-settings' as '/');
 
   if (budget.totalLimit === 0) {
-    return <View style={styles.empty}><Txt typography="t5" color={colors.textCaption}>설정된 예산이 없어요</Txt></View>;
+    return (
+      <View style={styles.empty}>
+        <Txt typography="t5" color={colors.textCaption}>설정된 예산이 없어요</Txt>
+        <Pressable style={styles.emptyBtn} onPress={goSettings}>
+          <Txt typography="t5" fontWeight="bold" color={colors.brand}>예산 설정하기</Txt>
+        </Pressable>
+      </View>
+    );
   }
 
   const totalPct = pctOf(budget.totalSpent, budget.totalLimit);
@@ -58,7 +68,9 @@ export function BudgetTab({ data }: { data: AnalysisData }) {
       <View style={styles.card}>
         <View style={styles.cardTop}>
           <Txt typography="t7" color={colors.textSecondary}>전체 예산</Txt>
-          <Txt typography="t7" fontWeight="medium" color={colors.brand}>예산 설정</Txt>
+          <Pressable hitSlop={8} onPress={goSettings}>
+            <Txt typography="t7" fontWeight="medium" color={colors.brand}>예산 설정</Txt>
+          </Pressable>
         </View>
         <View style={styles.amountRow}>
           <Txt typography="t4" fontWeight="bold" color={colors.textPrimary}>{formatWon(budget.totalSpent)}</Txt>
@@ -98,5 +110,6 @@ const styles = StyleSheet.create({
   trackLg: { height: 10, borderRadius: 6 },
   fill: { height: 8, borderRadius: 5 },
   fillLg: { height: 10, borderRadius: 6 },
-  empty: { alignItems: 'center', paddingVertical: 48 },
+  empty: { alignItems: 'center', paddingVertical: 48, gap: spacing.lg },
+  emptyBtn: { paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: radius.button, backgroundColor: colors.grey100 },
 });
