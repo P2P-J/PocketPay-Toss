@@ -24,6 +24,10 @@ function MorePage() {
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <TeamSummaryCard team={currentTeam} />
           <MenuSection
+            title="내 계정"
+            items={[{ emoji: '🙂', label: '프로필', path: '/profile' }]}
+          />
+          <MenuSection
             title="모임 관리"
             items={[
               { emoji: '👥', label: '멤버 관리', value: `${currentTeam?.members?.length ?? 0}명`, path: '/members' },
