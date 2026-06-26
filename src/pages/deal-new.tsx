@@ -1,6 +1,6 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { openCamera, fetchAlbumPhotos, OpenCameraPermissionError, type ImageResponse } from '@apps-in-toss/framework';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ScrollView, View, Text, TextInput, Pressable, Image, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { analyzeReceipt } from '../api/ocr';
@@ -48,18 +48,22 @@ function DealNewPage() {
   };
 
   // OCR: 촬영/앨범 → 분석은 백그라운드(논블로킹) → 거래처·금액·날짜 자동 채움
+  // 연속 첨부 시 늦게 끝난 응답이 최신 입력을 덮지 않도록 시퀀스 가드
+  const ocrSeq = useRef(0);
   const runOcr = async (uri: string) => {
+    const seq = ++ocrSeq.current;
     setOcrLoading(true);
     try {
       const r = await analyzeReceipt({ uri });
+      if (seq !== ocrSeq.current) return; // 더 최신 첨부가 있으면 무시
       if (r.storeInfo && r.storeInfo !== 'N/A') setMerchant(r.storeInfo);
       if (r.price > 0) setAmount(r.price);
       if (r.date) setDate(r.date);
       if (r.receiptUrl) setReceiptUrl(r.receiptUrl);
     } catch (e) {
-      Alert.alert('영수증 분석 실패', e instanceof Error ? e.message : '다시 시도해주세요.');
+      if (seq === ocrSeq.current) Alert.alert('영수증 분석 실패', e instanceof Error ? e.message : '다시 시도해주세요.');
     } finally {
-      setOcrLoading(false);
+      if (seq === ocrSeq.current) setOcrLoading(false);
     }
   };
 
