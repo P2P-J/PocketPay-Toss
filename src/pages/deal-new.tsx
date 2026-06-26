@@ -38,14 +38,20 @@ function DealNewPage() {
   const [receiptUrl, setReceiptUrl] = useState<string | null>(editing?.receiptUrl ?? null);
   const [ocrLoading, setOcrLoading] = useState(false);
 
-  const canSave = amount > 0 && !!category;
+  const [saving, setSaving] = useState(false);
+  const canSave = amount > 0 && !!category && !saving;
 
-  const onSave = () => {
+  const onSave = async () => {
     if (!canSave) return;
+    setSaving(true);
     const payload = { type, amount, category: category!, merchant: merchant.trim(), description: memo.trim(), date, receiptUrl: receiptUrl ?? undefined };
-    if (editing) updateTransaction(editing.id, payload);
-    else addTransaction(payload);
-    navigation.goBack();
+    try {
+      if (editing) await updateTransaction(editing.id, payload);
+      else await addTransaction(payload);
+      navigation.goBack();
+    } finally {
+      setSaving(false);
+    }
   };
 
   // OCR: 촬영/앨범 → 분석은 백그라운드(논블로킹) → 거래처·금액·날짜 자동 채움
@@ -104,7 +110,7 @@ function DealNewPage() {
     const name = editing.merchant || getCategoryLabel(editing.category);
     Alert.alert('거래 삭제', `'${name}' 거래를 삭제하시겠습니까?`, [
       { text: '취소', style: 'cancel' },
-      { text: '삭제', style: 'destructive', onPress: () => { deleteTransaction(editing.id); navigation.goBack(); } },
+      { text: '삭제', style: 'destructive', onPress: async () => { await deleteTransaction(editing.id); navigation.goBack(); } },
     ]);
   };
 

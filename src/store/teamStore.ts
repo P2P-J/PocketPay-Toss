@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { teamApi } from '../api/team';
 import { dealApi } from '../api/deal';
 import { getTeamId } from '../types/team';
-import { dealToTransaction, type Transaction } from '../types/transaction';
+import { dealToTransaction, transactionToDealPayload, type Transaction } from '../types/transaction';
 import type { Team, TeamCategory, TeamDisplayMode, TeamAccountMode } from '../types/team';
 import type { Summary, MonthlyStats } from '../types/stats';
 import { pad } from '../lib/date';
@@ -27,9 +27,9 @@ interface TeamState {
   fetchTeams: () => Promise<void>;
   setCurrentTeam: (teamId: string) => Promise<void>;
   createTeam: (input: NewTeamInput) => void;
-  addTransaction: (input: Omit<Transaction, 'id'>) => void;
-  updateTransaction: (id: string, input: Omit<Transaction, 'id'>) => void;
-  deleteTransaction: (id: string) => void;
+  addTransaction: (input: Omit<Transaction, 'id'>) => Promise<void>;
+  updateTransaction: (id: string, input: Omit<Transaction, 'id'>) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
   setEditingTransaction: (tx: Transaction | null) => void;
   reset: () => void;
 }
@@ -181,17 +181,54 @@ export const useTeamStore = create<TeamState>((set, get) => ({
     }
   },
 
-  addTransaction: (input) => {
-    const tx: Transaction = { ...input, id: `local-${++localSeq}` };
-    set(statePatch([tx, ...get().transactions]));
+  addTransaction: async (input) => {
+    if (USE_SAMPLE) {
+      const tx: Transaction = { ...input, id: `local-${++localSeq}` };
+      set(statePatch([tx, ...get().transactions]));
+      return;
+    }
+    const team = get().currentTeam;
+    if (!team) return;
+    const teamId = getTeamId(team);
+    set({ loading: true, error: null });
+    try {
+      await dealApi.create(transactionToDealPayload({ ...input, teamId }));
+      await get().setCurrentTeam(teamId); // 등록 후 재조회
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : '거래 등록에 실패했어요.' });
+    }
   },
 
-  updateTransaction: (id, input) => {
-    set(statePatch(get().transactions.map((t) => (t.id === id ? { ...input, id } : t))));
+  updateTransaction: async (id, input) => {
+    if (USE_SAMPLE) {
+      set(statePatch(get().transactions.map((t) => (t.id === id ? { ...input, id } : t))));
+      return;
+    }
+    const team = get().currentTeam;
+    if (!team) return;
+    set({ loading: true, error: null });
+    try {
+      await dealApi.update(id, transactionToDealPayload(input));
+      await get().setCurrentTeam(getTeamId(team));
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : '거래 수정에 실패했어요.' });
+    }
   },
 
-  deleteTransaction: (id) => {
-    set(statePatch(get().transactions.filter((t) => t.id !== id)));
+  deleteTransaction: async (id) => {
+    if (USE_SAMPLE) {
+      set(statePatch(get().transactions.filter((t) => t.id !== id)));
+      return;
+    }
+    const team = get().currentTeam;
+    if (!team) return;
+    set({ loading: true, error: null });
+    try {
+      await dealApi.remove(id);
+      await get().setCurrentTeam(getTeamId(team));
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : '거래 삭제에 실패했어요.' });
+    }
   },
 
   createTeam: (input) => {
