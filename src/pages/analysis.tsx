@@ -11,7 +11,8 @@ import { CategoryTab } from '../components/analysis/CategoryTab';
 import { BudgetTab } from '../components/analysis/BudgetTab';
 import { MemberTab } from '../components/analysis/MemberTab';
 import { useTeamStore } from '../store/teamStore';
-import { useBudgetStore } from '../store/budgetStore';
+import { useBudgetStore, selectBudget } from '../store/budgetStore';
+import { getTeamId } from '../types/team';
 import { buildAnalysisData } from '../lib/analysis';
 
 export const Route = createRoute('/analysis', { component: AnalysisPage });
@@ -32,8 +33,13 @@ function AnalysisPage() {
   });
   const [tab, setTab] = useState<TabValue>('summary');
   const transactions = useTeamStore((s) => s.transactions);
-  const budgetConfig = useBudgetStore((s) => s.config);
-  const data = useMemo(() => buildAnalysisData(ym.y, ym.m, transactions, budgetConfig), [ym, transactions, budgetConfig]);
+  const currentTeam = useTeamStore((s) => s.currentTeam);
+  const teamId = currentTeam ? getTeamId(currentTeam) : '';
+  const budgetConfig = useBudgetStore(selectBudget(teamId));
+  const data = useMemo(
+    () => buildAnalysisData(ym.y, ym.m, transactions, budgetConfig, currentTeam?.members ?? [], currentTeam?.displayMode),
+    [ym, transactions, budgetConfig, currentTeam],
+  );
 
   const shift = (delta: number) =>
     setYm(({ y, m }) => {

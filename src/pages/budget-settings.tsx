@@ -8,13 +8,17 @@ import { formatAmountInput, parseAmount } from '../lib/format';
 import { getCategoryLabel, getCategoryEmoji } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DetailHeader } from '../components/layout/DetailHeader';
-import { useBudgetStore, type BudgetLimit } from '../store/budgetStore';
+import { useBudgetStore, selectBudget, type BudgetLimit } from '../store/budgetStore';
+import { useTeamStore } from '../store/teamStore';
+import { getTeamId } from '../types/team';
 
 export const Route = createRoute('/budget-settings', { component: BudgetSettingsPage });
 
 function BudgetSettingsPage() {
   const navigation = useNavigation();
-  const config = useBudgetStore((s) => s.config);
+  const currentTeam = useTeamStore((s) => s.currentTeam);
+  const teamId = currentTeam ? getTeamId(currentTeam) : '';
+  const config = useBudgetStore(selectBudget(teamId));
   const setBudget = useBudgetStore((s) => s.setBudget);
 
   const [totalLimit, setTotalLimit] = useState(config.totalLimit);
@@ -29,7 +33,7 @@ function BudgetSettingsPage() {
   };
 
   const onSave = () => {
-    setBudget({ totalLimit, limits: limits.filter((l) => l.limit > 0) });
+    setBudget(teamId, { totalLimit, limits: limits.filter((l) => l.limit > 0) });
     navigation.goBack();
   };
 

@@ -7,19 +7,13 @@ import { spacing, radius } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { avatarColor } from '../constants/avatar';
 import { useTeamStore } from '../store/teamStore';
-import type { Member } from '../types/team';
+import { getMemberId, getMemberName } from '../types/team';
 
 export const Route = createRoute('/members', { component: MembersPage });
 
 function MembersPage() {
   const team = useTeamStore((s) => s.currentTeam);
   const members = team?.members ?? [];
-
-  const displayName = (m: Member): string => {
-    const u = typeof m.user === 'string' ? null : m.user;
-    const name = team?.displayMode === 'realName' ? u?.name : u?.nickname ?? u?.name;
-    return name ?? '멤버';
-  };
 
   return (
     <View style={styles.container}>
@@ -28,11 +22,11 @@ function MembersPage() {
         <Txt typography="t7" color={colors.textCaption}>멤버 {members.length}명</Txt>
         <View style={styles.list}>
           {members.map((m, i) => {
-            const name = displayName(m);
+            const name = getMemberName(m, team?.displayMode);
             const isOwner = m.role === 'owner';
             const av = avatarColor(i);
             return (
-              <View key={(typeof m.user === 'string' ? m.user : m.user._id) ?? i} style={styles.row}>
+              <View key={getMemberId(m) || i} style={styles.row}>
                 <View style={[styles.avatar, { backgroundColor: av.bg }]}>
                   <Txt typography="t5" fontWeight="bold" color={av.fg}>{name.slice(0, 1)}</Txt>
                 </View>

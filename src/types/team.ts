@@ -45,6 +45,17 @@ export function getTeamId(team: Team): string {
   return team.id || team._id || '';
 }
 
+// 멤버 식별자 / 표시 이름(모임 displayMode에 따라 실명 vs 닉네임)
+export function getMemberId(m: Member): string {
+  return (typeof m.user === 'string' ? m.user : m.user._id) ?? '';
+}
+
+export function getMemberName(m: Member, displayMode?: TeamDisplayMode): string {
+  const u = typeof m.user === 'string' ? null : m.user;
+  const name = displayMode === 'realName' ? u?.name : u?.nickname ?? u?.name;
+  return name ?? '멤버';
+}
+
 export function isMatchingTeam(team: Team, targetId: string): boolean {
   return team.id === targetId || team._id === targetId;
 }

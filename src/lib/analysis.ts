@@ -1,7 +1,9 @@
 import type { Transaction } from '../types/transaction';
-import type { AnalysisData, CategorySlice, MonthlyTrendPoint } from '../types/analysis';
+import type { AnalysisData, CategorySlice, MonthlyTrendPoint, MemberSplit } from '../types/analysis';
 import type { BudgetConfig } from '../store/budgetStore';
-import { SAMPLE_BUDGET, SAMPLE_SPLIT } from '../constants/sampleAnalysis';
+import type { Member, TeamDisplayMode } from '../types/team';
+import { getMemberId, getMemberName } from '../types/team';
+import { SAMPLE_BUDGET } from '../constants/sampleAnalysis';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const ymStr = (y: number, m: number) => `${y}-${pad(m)}`;
@@ -20,11 +22,27 @@ function monthExpense(all: Transaction[], y: number, m: number): number {
 
 // teamStore 거래에서 분석 화면 데이터를 파생한다.
 // 거래로부터 못 구하는 예산 한도·멤버 분담만 더미(sampleAnalysis) 사용.
+function buildSplit(totalExpense: number, members: Member[], displayMode?: TeamDisplayMode): MemberSplit {
+  const memberCount = members.length;
+  const perPerson = memberCount > 0 ? Math.round(totalExpense / memberCount) : 0;
+  return {
+    memberCount,
+    perPerson,
+    totalExpense,
+    members: members.map((m) => {
+      const name = getMemberName(m, displayMode);
+      return { userId: getMemberId(m), name, initial: name.slice(0, 1) };
+    }),
+  };
+}
+
 export function buildAnalysisData(
   year: number,
   month: number,
   all: Transaction[],
   budgetConfig: BudgetConfig = SAMPLE_BUDGET,
+  members: Member[] = [],
+  displayMode?: TeamDisplayMode,
 ): AnalysisData {
   const cur = ymStr(year, month);
   const txs = all.filter((t) => t.date.slice(0, 7) === cur);
@@ -68,7 +86,7 @@ export function buildAnalysisData(
     trend,
     categories,
     budget,
-    split: SAMPLE_SPLIT, // ⚠️ 결제자 데이터 필요 → 더미 유지
+    split: buildSplit(expense, members, displayMode),
     transactions: txs,
   };
 }

@@ -2,7 +2,8 @@ import { createRoute, useNavigation } from '@granite-js/react-native';
 import React from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { useTeamStore } from '../store/teamStore';
-import { useAccountStore } from '../store/accountStore';
+import { useAccountStore, selectAccount } from '../store/accountStore';
+import { getTeamId } from '../types/team';
 import { colors } from '../constants/colors';
 import { spacing } from '../constants/spacing';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -15,7 +16,7 @@ export const Route = createRoute('/more', { component: MorePage });
 function MorePage() {
   const nav = useNavigation();
   const currentTeam = useTeamStore((s) => s.currentTeam);
-  const account = useAccountStore((s) => s.account);
+  const account = useAccountStore(selectAccount(currentTeam ? getTeamId(currentTeam) : ''));
 
   return (
     <View style={styles.container}>

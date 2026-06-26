@@ -5,7 +5,9 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
-import { useSettlementStore, type SettlementMethod } from '../store/settlementStore';
+import { useSettlementStore, selectMethod, type SettlementMethod } from '../store/settlementStore';
+import { useTeamStore } from '../store/teamStore';
+import { getTeamId } from '../types/team';
 
 export const Route = createRoute('/settlement-rule', { component: SettlementRulePage });
 
@@ -16,7 +18,9 @@ const RULES: { value: SettlementMethod; label: string; desc: string }[] = [
 ];
 
 function SettlementRulePage() {
-  const method = useSettlementStore((s) => s.method);
+  const currentTeam = useTeamStore((s) => s.currentTeam);
+  const teamId = currentTeam ? getTeamId(currentTeam) : '';
+  const method = useSettlementStore(selectMethod(teamId));
   const setMethod = useSettlementStore((s) => s.setMethod);
 
   return (
@@ -28,7 +32,7 @@ function SettlementRulePage() {
           {RULES.map((r) => {
             const on = method === r.value;
             return (
-              <Pressable key={r.value} style={[styles.row, on && styles.rowOn]} onPress={() => setMethod(r.value)}>
+              <Pressable key={r.value} style={[styles.row, on && styles.rowOn]} onPress={() => setMethod(teamId, r.value)}>
                 <View style={styles.texts}>
                   <Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>{r.label}</Txt>
                   <Txt typography="t7" color={colors.textCaption}>{r.desc}</Txt>

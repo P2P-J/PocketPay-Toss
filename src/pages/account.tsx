@@ -5,13 +5,17 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
-import { useAccountStore } from '../store/accountStore';
+import { useAccountStore, selectAccount } from '../store/accountStore';
+import { useTeamStore } from '../store/teamStore';
+import { getTeamId } from '../types/team';
 
 export const Route = createRoute('/account', { component: AccountPage });
 
 function AccountPage() {
   const navigation = useNavigation();
-  const account = useAccountStore((s) => s.account);
+  const currentTeam = useTeamStore((s) => s.currentTeam);
+  const teamId = currentTeam ? getTeamId(currentTeam) : '';
+  const account = useAccountStore(selectAccount(teamId));
   const setAccount = useAccountStore((s) => s.setAccount);
 
   const [bank, setBank] = useState(account.bank);
@@ -19,7 +23,7 @@ function AccountPage() {
   const [holder, setHolder] = useState(account.holder);
 
   const onSave = () => {
-    setAccount({ bank: bank.trim(), number: number.trim(), holder: holder.trim() });
+    setAccount(teamId, { bank: bank.trim(), number: number.trim(), holder: holder.trim() });
     navigation.goBack();
   };
 

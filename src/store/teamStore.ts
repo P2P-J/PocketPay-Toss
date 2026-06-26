@@ -148,9 +148,10 @@ export const useTeamStore = create<TeamState>((set, get) => ({
 
   setCurrentTeam: async (teamId: string) => {
     if (USE_SAMPLE) {
+      // 샘플 거래는 청바지(t1)만. 그 외 팀(주말 동호회/새 모임)은 빈 거래.
       set({
         currentTeam: sampleTeams.find((t) => getTeamId(t) === teamId) ?? sampleTeams[0] ?? null,
-        ...statePatch(sampleTransactions),
+        ...statePatch(teamId === 't1' ? sampleTransactions : []),
         loading: false,
       });
       return;

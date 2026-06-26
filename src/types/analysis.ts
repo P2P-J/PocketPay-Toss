@@ -39,14 +39,12 @@ export interface MemberShare {
   userId: string;
   name: string;
   initial: string; // 아바타 이니셜
-  paid: number; // 낸 금액
-  balance: number; // 정산 잔액 (낸 금액 - 1인당 부담). +면 받을 돈 / -면 낼 돈
 }
 
 export interface MemberSplit {
-  // ⚠️ 더치페이(dutch) 확장 + 멤버 집계 필요. 지금은 더미.
+  // 결제자(낸 사람)는 받지 않으므로 균등 분담(1인당 부담)만 계산. 실멤버 기반.
   memberCount: number;
-  perPerson: number; // 1인당 부담 (totalExpense / memberCount)
+  perPerson: number; // 1인당 부담 (이번 달 지출 / 멤버 수)
   totalExpense: number;
   members: MemberShare[];
 }
