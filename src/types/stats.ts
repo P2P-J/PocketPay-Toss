@@ -9,6 +9,6 @@ export interface MonthlyStats {
   previous: { income: number; expense: number };
   incomeChange: number;
   expenseChange: number;
-  categoryBreakdown: { category: string; total: number }[];
+  categoryBreakdown: { category: string; total: number; percent: number }[];
   topCategory: { category: string; total: number } | null;
 }
