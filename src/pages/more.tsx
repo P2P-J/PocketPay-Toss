@@ -4,6 +4,7 @@ import { ScrollView, View, StyleSheet } from 'react-native';
 import { useTeamStore } from '../store/teamStore';
 import { useAccountStore, selectAccount } from '../store/accountStore';
 import { getTeamId } from '../types/team';
+import { PREVIEW_MODE } from '../constants/config';
 import { colors } from '../constants/colors';
 import { spacing } from '../constants/spacing';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -16,7 +17,8 @@ export const Route = createRoute('/more', { component: MorePage });
 function MorePage() {
   const nav = useNavigation();
   const currentTeam = useTeamStore((s) => s.currentTeam);
-  const account = useAccountStore(selectAccount(currentTeam ? getTeamId(currentTeam) : ''));
+  const dummyAccount = useAccountStore(selectAccount(currentTeam ? getTeamId(currentTeam) : ''));
+  const accountBank = PREVIEW_MODE ? dummyAccount.bank : currentTeam?.account?.bank;
 
   return (
     <View style={styles.container}>
@@ -39,7 +41,7 @@ function MorePage() {
           <MenuSection
             title="계좌 · 알림"
             items={[
-              { emoji: '🏦', label: '연결 계좌', value: account.bank || '미설정', path: '/account' },
+              { emoji: '🏦', label: '연결 계좌', value: accountBank || '미설정', path: '/account' },
               { emoji: '🔔', label: '알림 설정', path: '/notifications' },
             ]}
           />

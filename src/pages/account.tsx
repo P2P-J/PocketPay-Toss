@@ -6,7 +6,10 @@ import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
+import { PREVIEW_MODE } from '../constants/config';
 import { useAccountStore, selectAccount } from '../store/accountStore';
+import { useTeamStore } from '../store/teamStore';
+import { teamApi } from '../api/team';
 import { useCurrentTeamId } from '../hooks/useCurrentTeamId';
 
 export const Route = createRoute('/account', { component: AccountPage });
@@ -14,23 +17,39 @@ export const Route = createRoute('/account', { component: AccountPage });
 function AccountPage() {
   const navigation = useNavigation();
   const teamId = useCurrentTeamId();
-  const account = useAccountStore(selectAccount(teamId));
+  const currentTeam = useTeamStore((s) => s.currentTeam);
+  const setCurrentTeam = useTeamStore((s) => s.setCurrentTeam);
+  const dummyAccount = useAccountStore(selectAccount(teamId));
   const setAccount = useAccountStore((s) => s.setAccount);
 
+  // 더미: accountStore, 실모드: Team.account
+  const account = PREVIEW_MODE ? dummyAccount : currentTeam?.account ?? { bank: '', number: '', holder: '' };
   const [bank, setBank] = useState(account.bank);
   const [number, setNumber] = useState(account.number);
   const [holder, setHolder] = useState(account.holder);
+  const [saving, setSaving] = useState(false);
 
   // 빈 계좌(전부 미입력)는 허용, 일부만 입력하면 안내. 번호는 숫자 8~16자리.
   const anyFilled = !!(bank.trim() || number.trim() || holder.trim());
   const digits = number.replace(/[^\d]/g, '');
   const numberError = anyFilled && number.trim() && (digits.length < 8 || digits.length > 16) ? '계좌번호는 숫자 8~16자리예요' : undefined;
-  const canSave = !anyFilled || (!!bank.trim() && !!holder.trim() && digits.length >= 8 && digits.length <= 16);
+  const canSave = !saving && (!anyFilled || (!!bank.trim() && !!holder.trim() && digits.length >= 8 && digits.length <= 16));
 
-  const onSave = () => {
+  const onSave = async () => {
     if (!canSave) return;
-    setAccount(teamId, { bank: bank.trim(), number: digits, holder: holder.trim() });
-    navigation.goBack();
+    setSaving(true);
+    const next = { bank: bank.trim(), number: digits, holder: holder.trim() };
+    try {
+      if (PREVIEW_MODE) {
+        setAccount(teamId, next);
+      } else {
+        await teamApi.update(teamId, { account: next });
+        await setCurrentTeam(teamId);
+      }
+      navigation.goBack();
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

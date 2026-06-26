@@ -26,7 +26,7 @@ interface TeamState {
 
   fetchTeams: () => Promise<void>;
   setCurrentTeam: (teamId: string) => Promise<void>;
-  createTeam: (input: NewTeamInput) => void;
+  createTeam: (input: NewTeamInput) => Promise<void>;
   addTransaction: (input: Omit<Transaction, 'id'>) => Promise<void>;
   updateTransaction: (id: string, input: Omit<Transaction, 'id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
@@ -231,22 +231,34 @@ export const useTeamStore = create<TeamState>((set, get) => ({
     }
   },
 
-  createTeam: (input) => {
-    // ⚠️ 로컬 생성(세션). 실 API 연동 시 POST /teams + 생성자 owner는 백엔드가 처리.
-    const team: Team = {
-      _id: `local-team-${++localTeamSeq}`,
-      name: input.name,
-      description: input.description,
-      category: input.category,
-      displayMode: input.displayMode,
-      accountMode: input.accountMode,
-      feeEnabled: input.feeEnabled,
-      feeAmount: input.feeEnabled ? input.feeAmount : undefined,
-      feeDueDay: input.feeEnabled ? input.feeDueDay : undefined,
-      members: [{ user: { _id: 'me', name: '나', nickname: '나' }, role: 'owner' }],
-    };
-    // 새 모임은 거래가 없으므로 빈 상태로 전환
-    set({ teams: [...get().teams, team], currentTeam: team, ...statePatch([]) });
+  createTeam: async (input) => {
+    if (USE_SAMPLE) {
+      // 로컬 생성(세션). 생성자 owner + 빈 거래.
+      const team: Team = {
+        _id: `local-team-${++localTeamSeq}`,
+        name: input.name,
+        description: input.description,
+        category: input.category,
+        displayMode: input.displayMode,
+        accountMode: input.accountMode,
+        feeEnabled: input.feeEnabled,
+        feeAmount: input.feeEnabled ? input.feeAmount : undefined,
+        feeDueDay: input.feeEnabled ? input.feeDueDay : undefined,
+        members: [{ user: { _id: 'me', name: '나', nickname: '나' }, role: 'owner' }],
+      };
+      set({ teams: [...get().teams, team], currentTeam: team, ...statePatch([]) });
+      return;
+    }
+    set({ loading: true, error: null });
+    try {
+      const res = await teamApi.create(input); // 생성자 owner는 백엔드가 처리
+      const teamsRes = await teamApi.getMyTeams();
+      set({ teams: teamsRes.data || [] });
+      if (res.data) await get().setCurrentTeam(getTeamId(res.data));
+      else set({ loading: false });
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : '모임 생성에 실패했어요.' });
+    }
   },
 
   setEditingTransaction: (tx) => set({ editingTransaction: tx }),

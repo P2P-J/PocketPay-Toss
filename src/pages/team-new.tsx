@@ -44,19 +44,25 @@ function TeamNewPage() {
   const feeValid = !feeEnabled || (feeAmount > 0 && feeDueDay >= 1 && feeDueDay <= 31);
   const canCreate = name.trim().length > 0 && feeValid;
 
-  const onCreate = () => {
-    if (!canCreate) return;
-    createTeam({
+  const [creating, setCreating] = useState(false);
+  const onCreate = async () => {
+    if (!canCreate || creating) return;
+    setCreating(true);
+    try {
+      await createTeam({
       name: name.trim(),
       description: description.trim() || undefined,
       category,
       displayMode,
       accountMode,
       feeEnabled,
-      feeAmount: feeEnabled ? feeAmount : undefined,
-      feeDueDay: feeEnabled ? feeDueDay : undefined,
-    });
-    navigation.goBack();
+        feeAmount: feeEnabled ? feeAmount : undefined,
+        feeDueDay: feeEnabled ? feeDueDay : undefined,
+      });
+      navigation.goBack();
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -112,7 +118,7 @@ function TeamNewPage() {
           )}
         </View>
 
-        <Pressable style={[styles.create, !canCreate && styles.createOff]} onPress={onCreate} disabled={!canCreate}>
+        <Pressable style={[styles.create, (!canCreate || creating) && styles.createOff]} onPress={onCreate} disabled={!canCreate || creating}>
           <Txt typography="t4" fontWeight="bold" color={colors.white}>모임 만들기</Txt>
         </Pressable>
       </ScrollView>

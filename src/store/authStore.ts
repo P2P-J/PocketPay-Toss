@@ -19,6 +19,7 @@ interface AuthState {
   setAccessToken: (token: string) => Promise<void>;
   checkAuth: () => Promise<void>;
   loginWithToss: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -92,6 +93,16 @@ export const useAuthStore = create<AuthState>((set, get) => {
         const message = err instanceof Error ? err.message : '로그인에 실패했어요.';
         set({ error: message, loading: false });
         throw err;
+      }
+    },
+
+    // 프로필 변경 후 최신 사용자 정보 재조회
+    refreshUser: async () => {
+      try {
+        const userData = await authApi.me();
+        set({ user: userData });
+      } catch {
+        // 무시 — 기존 user 유지
       }
     },
 

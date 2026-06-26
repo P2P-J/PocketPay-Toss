@@ -1,13 +1,16 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import React, { useState } from 'react';
-import { ScrollView, View, Pressable, StyleSheet } from 'react-native';
+import { ScrollView, View, Pressable, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
+import { PREVIEW_MODE } from '../constants/config';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
 import { avatarColor } from '../constants/avatar';
 import { useProfileStore } from '../store/profileStore';
+import { useAuthStore } from '../store/authStore';
+import { accountApi } from '../api/account';
 
 const HANDLE_RE = /^[a-z0-9_]{3,20}$/;
 
@@ -15,21 +18,39 @@ export const Route = createRoute('/profile', { component: ProfilePage });
 
 function ProfilePage() {
   const navigation = useNavigation();
-  const profile = useProfileStore();
+  const profileStore = useProfileStore();
+  const user = useAuthStore((s) => s.user);
+  const refreshUser = useAuthStore((s) => s.refreshUser);
 
-  const [name, setName] = useState(profile.name);
-  const [nickname, setNickname] = useState(profile.nickname);
-  const [handle, setHandle] = useState(profile.handle);
+  // 더미: profileStore, 실모드: authStore.user(/account/me)
+  const init = PREVIEW_MODE ? profileStore : { name: user?.name ?? '', nickname: user?.nickname ?? '', handle: user?.handle ?? '' };
+  const [name, setName] = useState(init.name);
+  const [nickname, setNickname] = useState(init.nickname);
+  const [handle, setHandle] = useState(init.handle);
+  const [saving, setSaving] = useState(false);
 
   const handleValid = HANDLE_RE.test(handle.trim());
   const handleError = handle.trim() && !handleValid ? '영문 소문자·숫자·_ 3~20자' : undefined;
-  const canSave = name.trim().length > 0 && nickname.trim().length > 0 && handleValid;
+  const canSave = name.trim().length > 0 && nickname.trim().length > 0 && handleValid && !saving;
   const av = avatarColor(0);
 
-  const onSave = () => {
+  const onSave = async () => {
     if (!canSave) return;
-    profile.set({ name: name.trim(), nickname: nickname.trim(), handle: handle.trim() });
-    navigation.goBack();
+    setSaving(true);
+    try {
+      if (PREVIEW_MODE) {
+        profileStore.set({ name: name.trim(), nickname: nickname.trim(), handle: handle.trim() });
+      } else {
+        await accountApi.updateProfile({ name: name.trim(), nickname: nickname.trim() });
+        if (handle.trim() !== (user?.handle ?? '')) await accountApi.updateHandle(handle.trim());
+        await refreshUser();
+      }
+      navigation.goBack();
+    } catch (e) {
+      Alert.alert('저장 실패', e instanceof Error ? e.message : '다시 시도해주세요.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
