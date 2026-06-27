@@ -123,6 +123,8 @@ export const useTeamStore = create<TeamState>((set, get) => ({
   editingTransaction: null,
 
   fetchTeams: async () => {
+    // 이미 로드돼 있으면 다시 시드/조회하지 않음 — 홈 재진입 시 생성한 모임/선택 상태 보존
+    if (get().teams.length > 0) return;
     if (USE_SAMPLE) {
       set({
         teams: sampleTeams,
