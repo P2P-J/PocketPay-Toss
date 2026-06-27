@@ -29,7 +29,7 @@ function Home() {
   useEffect(() => { if (accessToken) { fetchTeams(); fetchUnread(); } }, [accessToken, fetchTeams, fetchUnread]);
   useEffect(() => { if (!authLoading && !accessToken) navigation.navigate('/login'); }, [authLoading, accessToken, navigation]);
 
-  if (!accessToken) return <View style={styles.container} />;
+  if (!accessToken) return <View style={[styles.container, styles.center]}><ActivityIndicator color={colors.brand} /></View>;
 
   return (
     <View style={styles.container}>

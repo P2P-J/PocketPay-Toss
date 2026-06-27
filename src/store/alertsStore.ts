@@ -73,7 +73,7 @@ export const useAlertsStore = create<AlertsState>((set) => ({
         kind: 'dutch' as const,
         dutchId: d._id,
         amount: d.amount,
-        account: acc ? `${acc.bank ?? ''} ${acc.number ?? ''} (${acc.holder ?? ''})`.trim() : undefined,
+        account: acc?.bank && acc?.number && acc?.holder ? `${acc.bank} ${acc.number} (${acc.holder})` : undefined,
       };
     });
     const merged = [...invites, ...dutches].sort((a, b) => b.date.localeCompare(a.date));
@@ -91,7 +91,11 @@ export const useAlertsStore = create<AlertsState>((set) => ({
     if (!PREVIEW_MODE) {
       try { await dutchApi.dismiss(dutchId); } catch { /* 무시 */ }
     }
-    set((s) => ({ alerts: s.alerts.filter((a) => a.dutchId !== dutchId) }));
+    set((s) => {
+      const alerts = s.alerts.filter((a) => a.dutchId !== dutchId);
+      // 프리뷰는 뱃지를 알림에서 파생, 실모드는 서버 카운트 유지
+      return PREVIEW_MODE ? { alerts, unreadCount: alerts.filter((a) => !a.read).length } : { alerts };
+    });
   },
 }));
 

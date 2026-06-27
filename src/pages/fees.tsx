@@ -1,6 +1,6 @@
 import { createRoute } from '@granite-js/react-native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, Pressable, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
@@ -35,10 +35,11 @@ function FeesPage() {
   const [ym, setYm] = useState({ y: now.getFullYear(), m: now.getMonth() + 1 });
   const [paidSet, setPaidSet] = useState<Set<string>>(new Set()); // 더미 토글
   const [realStatus, setRealStatus] = useState<FeeStatus | null>(null);
+  const [busy, setBusy] = useState<Record<string, boolean>>({}); // 멤버별 처리 중(연타 방지)
 
   const fetchStatus = React.useCallback(() => {
-    if (PREVIEW_MODE || !teamId) return;
-    feeApi.getStatus(teamId, ym.y, ym.m).then((res) => setRealStatus(mapRaw(res.data))).catch(() => setRealStatus(null));
+    if (PREVIEW_MODE || !teamId) return Promise.resolve();
+    return feeApi.getStatus(teamId, ym.y, ym.m).then((res) => setRealStatus(mapRaw(res.data))).catch(() => setRealStatus(null));
   }, [teamId, ym]);
 
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
@@ -65,7 +66,7 @@ function FeesPage() {
   const status: FeeStatus = PREVIEW_MODE ? dummyStatus : realStatus ?? { feeAmount: 0, feeDueDay: 1, year: ym.y, month: ym.m, members: [], paidCount: 0 };
 
   const toggle = async (userId: string, paid: boolean, paymentId?: string) => {
-    if (!isOwner) return;
+    if (!isOwner || busy[userId]) return;
     if (PREVIEW_MODE) {
       setPaidSet((prev) => {
         const next = new Set(prev);
@@ -74,12 +75,15 @@ function FeesPage() {
       });
       return;
     }
+    setBusy((b) => ({ ...b, [userId]: true }));
     try {
       if (paid && paymentId) await feeApi.deletePayment(teamId, paymentId);
       else await feeApi.recordPayment(teamId, { userId, year: ym.y, month: ym.m, amount: status.feeAmount });
-      fetchStatus();
-    } catch {
-      // 무시 — 다음 조회 시 정정
+      await fetchStatus();
+    } catch (e) {
+      Alert.alert('실패', e instanceof Error ? e.message : '다시 시도해주세요.');
+    } finally {
+      setBusy((b) => { const n = { ...b }; delete n[userId]; return n; });
     }
   };
 
@@ -114,7 +118,7 @@ function FeesPage() {
           {status.members.map((m, i) => {
             const av = avatarColor(i);
             return (
-              <Pressable key={m.userId || i} style={styles.row} disabled={!isOwner} onPress={() => toggle(m.userId, m.paid, m.paymentId)}>
+              <Pressable key={m.userId || i} style={[styles.row, busy[m.userId] && styles.rowBusy]} disabled={!isOwner || busy[m.userId]} onPress={() => toggle(m.userId, m.paid, m.paymentId)}>
                 <View style={[styles.avatar, { backgroundColor: av.bg }]}>
                   <Txt typography="t5" fontWeight="bold" color={av.fg}>{m.name.slice(0, 1)}</Txt>
                 </View>
@@ -141,6 +145,7 @@ const styles = StyleSheet.create({
   cardRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   list: { gap: spacing.lg, marginTop: spacing.xs },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  rowBusy: { opacity: 0.5 },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   name: { flexShrink: 1 },
   spacer: { flex: 1 },

@@ -161,9 +161,14 @@ export const useTeamStore = create<TeamState>((set, get) => {
       const teams = res.data || [];
       set({ teams });
       if (teams.length > 0 && teams[0]) {
-        await get().setCurrentTeam(getTeamId(teams[0]));
+        // 기존 선택 모임이 아직 있으면 유지(재조회마다 teams[0]로 리셋 방지)
+        const cur = get().currentTeam;
+        const prevId = cur ? getTeamId(cur) : null;
+        const keepId = prevId && teams.some((t) => getTeamId(t) === prevId) ? prevId : getTeamId(teams[0]);
+        await get().setCurrentTeam(keepId);
       } else {
-        set({ loading: false });
+        // 팀이 0개면 옛 모임/거래 잔상 제거
+        set({ currentTeam: null, ...statePatch([]), loading: false });
       }
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임을 불러오지 못했어요.' });

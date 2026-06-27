@@ -36,7 +36,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     user: null,
     accessToken: null,
     refreshToken: null,
-    loading: false,
+    loading: true, // checkAuth 완료 전까지 true — 로그인 화면으로 튀는 레이스 방지
     error: null,
 
     setAccessToken: async (token) => {
