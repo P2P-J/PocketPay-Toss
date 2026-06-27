@@ -24,6 +24,7 @@ function MorePage() {
 
   const manageItems = [
     { emoji: '👥', label: '멤버 관리', value: `${currentTeam?.members?.length ?? 0}명`, path: '/members' },
+    ...(currentTeam?.feeEnabled ? [{ emoji: '💰', label: '회비', path: '/fees' }] : []),
     { emoji: '🧾', label: '정산 규칙', path: '/settlement-rule' },
     { emoji: '🏷️', label: '카테고리 설정', path: '/category-settings' },
     ...(isOwner ? [{ emoji: '⚙️', label: '모임 설정', path: '/team-settings' }] : []),

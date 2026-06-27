@@ -16,6 +16,7 @@ import { Route as _SettlementRuleRoute } from '../pages/settlement-rule';
 import { Route as _TeamNewRoute } from '../pages/team-new';
 import { Route as _ProfileRoute } from '../pages/profile';
 import { Route as _TeamSettingsRoute } from '../pages/team-settings';
+import { Route as _FeesRoute } from '../pages/fees';
 import { Route as _MoreRoute } from '../pages/more';
 import { Route as _IndexRoute } from '../pages/';
 
@@ -37,6 +38,7 @@ declare module '@granite-js/react-native' {
     '/team-new': (typeof _TeamNewRoute)['_inputType'];
     '/profile': (typeof _ProfileRoute)['_inputType'];
     '/team-settings': (typeof _TeamSettingsRoute)['_inputType'];
+    '/fees': (typeof _FeesRoute)['_inputType'];
     '/more': (typeof _MoreRoute)['_inputType'];
     '/': (typeof _IndexRoute)['_inputType'];
   }
@@ -58,6 +60,7 @@ declare module '@granite-js/react-native' {
     '/team-new': (typeof _TeamNewRoute)['_outputType'];
     '/profile': (typeof _ProfileRoute)['_outputType'];
     '/team-settings': (typeof _TeamSettingsRoute)['_outputType'];
+    '/fees': (typeof _FeesRoute)['_outputType'];
     '/more': (typeof _MoreRoute)['_outputType'];
     '/': (typeof _IndexRoute)['_outputType'];
   }
