@@ -8,7 +8,7 @@ import { formatWon } from '../../lib/format';
 import { getCategoryLabel, getCategoryEmoji } from '../../constants/categories';
 import type { AnalysisData, CategoryBudget } from '../../types/analysis';
 
-const WARN = '#FF922B'; // 80%↑ 경고(주황)
+const WARN = colors.warn; // 80%↑ 경고(주황)
 
 // 사용률에 따른 막대 색: 초과 빨강 / 임박 주황 / 정상 그린
 function usageColor(pct: number): string {

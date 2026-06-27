@@ -3,7 +3,7 @@ import { Modal, View, Pressable, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
-import { avatarColor } from '../../constants/avatar';
+import { Avatar } from '../common/Avatar';
 import { getMemberName } from '../../types/team';
 import type { Member, TeamDisplayMode } from '../../types/team';
 
@@ -19,7 +19,6 @@ export function MemberInfoSheet({ member, displayMode, index, onClose }: Props) 
   if (!member) return null;
   const u = typeof member.user === 'string' ? null : member.user;
   const name = getMemberName(member, displayMode);
-  const av = avatarColor(index);
   const isOwner = member.role === 'owner';
 
   return (
@@ -27,9 +26,7 @@ export function MemberInfoSheet({ member, displayMode, index, onClose }: Props) 
       <Pressable style={styles.backdrop} onPress={onClose} />
       <View style={styles.sheet}>
         <View style={styles.handle} />
-        <View style={[styles.avatar, { backgroundColor: av.bg }]}>
-          <Txt typography="t3" fontWeight="bold" color={av.fg}>{name.slice(0, 1)}</Txt>
-        </View>
+        <Avatar name={name} index={index} size={64} typography="t3" />
         <Txt typography="t4" fontWeight="bold" color={colors.textPrimary}>{name}</Txt>
         <View style={[styles.badge, isOwner && styles.badgeOwner]}>
           <Txt typography="t7" fontWeight="bold" color={isOwner ? colors.brand : colors.textCaption}>{isOwner ? '방장' : '멤버'}</Txt>
@@ -52,9 +49,8 @@ const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: { backgroundColor: colors.white, borderTopLeftRadius: radius.sheet, borderTopRightRadius: radius.sheet, paddingHorizontal: spacing.screenX, paddingTop: spacing.md, paddingBottom: spacing.section, alignItems: 'center', gap: spacing.sm },
   handle: { width: 40, height: 4, borderRadius: 2, backgroundColor: colors.grey200, marginBottom: spacing.md },
-  avatar: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center' },
   badge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.pill, backgroundColor: colors.grey100 },
-  badgeOwner: { backgroundColor: '#E7F9F1' },
+  badgeOwner: { backgroundColor: colors.brandTint },
   rows: { alignSelf: 'stretch', marginTop: spacing.md, marginBottom: spacing.sm },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.divider },
 });

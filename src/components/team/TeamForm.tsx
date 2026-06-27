@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   segItemOn: { backgroundColor: colors.white },
   emojiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   emojiItem: { width: 44, height: 44, borderRadius: radius.button, backgroundColor: colors.grey100, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.grey100 },
-  emojiItemOn: { borderColor: colors.brand, backgroundColor: '#E7F9F1' },
+  emojiItemOn: { borderColor: colors.brand, backgroundColor: colors.brandTint },
   emojiText: { fontSize: 22, lineHeight: 28, includeFontPadding: false },
   feeHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   feeBody: { gap: spacing.md, backgroundColor: colors.cardBg, borderRadius: radius.card, padding: spacing.lg },

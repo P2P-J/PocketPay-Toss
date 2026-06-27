@@ -3,8 +3,12 @@
 export const colors = {
   // 브랜드 / 시맨틱
   brand: '#3DD598', // 잔액 · primary
+  brandTint: '#E7F9F1', // 브랜드 연한 배경(뱃지/선택/버튼틴트)
+  brandStrong: '#12B886', // 브랜드 진한 톤(납부완료 등 강조 텍스트)
   income: '#3182f6', // = TDS blue500 (수입)
   expense: '#f04452', // = TDS red500 (지출)
+  expenseTint: '#FFEDED', // 지출/삭제 연한 배경
+  warn: '#FF922B', // 경고(예산 80%↑ 등)
 
   // TDS 그레이 스케일 (텍스트 위계 / 라인 / 배경)
   grey900: '#191f28',

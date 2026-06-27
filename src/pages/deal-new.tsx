@@ -231,5 +231,5 @@ const styles = StyleSheet.create({
   dutch: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider },
   save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand },
   saveOff: { backgroundColor: colors.grey300 },
-  delete: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: '#FFEDED' },
+  delete: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.expenseTint },
 });

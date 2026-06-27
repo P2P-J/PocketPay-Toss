@@ -8,15 +8,14 @@ import { PREVIEW_MODE } from '../constants/config';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
 import { MemberInfoSheet } from '../components/team/MemberInfoSheet';
-import { avatarColor } from '../constants/avatar';
+import { Avatar } from '../components/common/Avatar';
 import { useTeamStore } from '../store/teamStore';
 import { useIsOwner } from '../hooks/useIsOwner';
 import { getMemberId, getMemberName, getTeamId, type Member } from '../types/team';
+import { isValidHandle } from '../lib/validation';
 import { teamApi } from '../api/team';
 
 export const Route = createRoute('/members', { component: MembersPage });
-
-const HANDLE_RE = /^[a-z0-9_]{3,20}$/;
 
 function MembersPage() {
   const team = useTeamStore((s) => s.currentTeam);
@@ -29,7 +28,7 @@ function MembersPage() {
   const [handle, setHandle] = useState('');
   const [inviting, setInviting] = useState(false);
   const [infoTarget, setInfoTarget] = useState<{ member: Member; index: number } | null>(null);
-  const handleValid = HANDLE_RE.test(handle.trim());
+  const handleValid = isValidHandle(handle);
 
   const confirmKick = (m: Member) => {
     const name = getMemberName(m, team?.displayMode);
@@ -89,12 +88,9 @@ function MembersPage() {
           {members.map((m, i) => {
             const name = getMemberName(m, team?.displayMode);
             const isOwnerMember = m.role === 'owner';
-            const av = avatarColor(i);
             return (
               <Pressable key={getMemberId(m) || i} style={styles.row} onLongPress={() => onLongPress(m, i)} delayLongPress={350}>
-                <View style={[styles.avatar, { backgroundColor: av.bg }]}>
-                  <Txt typography="t5" fontWeight="bold" color={av.fg}>{name.slice(0, 1)}</Txt>
-                </View>
+                <Avatar name={name} index={i} />
                 <Txt typography="t5" fontWeight="medium" color={colors.textPrimary} numberOfLines={1} style={styles.name}>{name}</Txt>
                 <View style={styles.spacer} />
                 <View style={[styles.badge, isOwnerMember && styles.badgeOwner]}>
@@ -130,11 +126,10 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.md },
   list: { gap: spacing.lg },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   name: { flexShrink: 1 },
   spacer: { flex: 1 },
   badge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.pill, backgroundColor: colors.grey100 },
-  badgeOwner: { backgroundColor: '#E7F9F1' },
+  badgeOwner: { backgroundColor: colors.brandTint },
   inviteSection: { marginTop: spacing.lg, gap: spacing.sm },
   invite: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider, borderStyle: 'dashed' },
   inviteOff: { opacity: 0.6 },

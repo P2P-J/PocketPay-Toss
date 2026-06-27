@@ -7,14 +7,13 @@ import { spacing, radius } from '../constants/spacing';
 import { PREVIEW_MODE } from '../constants/config';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
-import { avatarColor } from '../constants/avatar';
+import { Avatar } from '../components/common/Avatar';
 import { useProfileStore } from '../store/profileStore';
 import { useAuthStore } from '../store/authStore';
 import { useTeamStore } from '../store/teamStore';
 import { isTeamOwner } from '../types/team';
+import { isValidHandle } from '../lib/validation';
 import { accountApi } from '../api/account';
-
-const HANDLE_RE = /^[a-z0-9_]{3,20}$/;
 
 export const Route = createRoute('/profile', { component: ProfilePage });
 
@@ -33,10 +32,9 @@ function ProfilePage() {
   const [handle, setHandle] = useState(init.handle);
   const [saving, setSaving] = useState(false);
 
-  const handleValid = HANDLE_RE.test(handle.trim());
+  const handleValid = isValidHandle(handle);
   const handleError = handle.trim() && !handleValid ? '영문 소문자·숫자·_ 3~20자' : undefined;
   const canSave = name.trim().length > 0 && nickname.trim().length > 0 && handleValid && !saving;
-  const av = avatarColor(0);
 
   const onSave = async () => {
     if (!canSave) return;
@@ -94,9 +92,7 @@ function ProfilePage() {
       <DetailHeader title="프로필" />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <View style={styles.avatarWrap}>
-          <View style={[styles.avatar, { backgroundColor: av.bg }]}>
-            <Txt typography="t2" fontWeight="bold" color={av.fg}>{(nickname || name).slice(0, 1)}</Txt>
-          </View>
+          <Avatar name={nickname || name} index={0} size={72} typography="t2" />
           <Txt typography="t7" color={colors.textCaption}>토스 계정으로 로그인됨</Txt>
         </View>
 
@@ -134,7 +130,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.lg },
   avatarWrap: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg },
-  avatar: { width: 72, height: 72, borderRadius: 36, alignItems: 'center', justifyContent: 'center' },
   save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand, marginTop: spacing.sm },
   saveOff: { backgroundColor: colors.grey300 },
   account: { marginTop: spacing.section, flexDirection: 'row', justifyContent: 'center', gap: spacing.xl },

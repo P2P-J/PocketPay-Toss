@@ -4,7 +4,7 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { formatWon, formatSigned } from '../../lib/format';
-import { avatarColor } from '../../constants/avatar';
+import { Avatar } from '../common/Avatar';
 import { PREVIEW_MODE } from '../../constants/config';
 import { useTeamStore } from '../../store/teamStore';
 import { getTeamId } from '../../types/team';
@@ -12,12 +12,9 @@ import { dutchApi } from '../../api/dutch';
 import type { AnalysisData, MemberShare } from '../../types/analysis';
 
 function MemberRow({ member, index, share }: { member: MemberShare; index: number; share: number }) {
-  const av = avatarColor(index);
   return (
     <View style={styles.row}>
-      <View style={[styles.avatar, { backgroundColor: av.bg }]}>
-        <Txt typography="t5" fontWeight="bold" color={av.fg}>{member.initial}</Txt>
-      </View>
+      <Avatar name={member.name} index={index} />
       <Txt typography="t5" fontWeight="medium" color={colors.textPrimary} numberOfLines={1} style={styles.name}>{member.name}</Txt>
       <View style={styles.spacer} />
       <Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>{formatWon(share)}</Txt>
@@ -110,7 +107,6 @@ const styles = StyleSheet.create({
   colRight: { alignItems: 'flex-end' },
   rows: { gap: spacing.lg },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   name: { flexShrink: 1 },
   spacer: { flex: 1 },
   cta: { height: 52, borderRadius: radius.button, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginTop: spacing.sm },

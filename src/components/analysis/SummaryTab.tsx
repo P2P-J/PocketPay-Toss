@@ -37,5 +37,5 @@ export function SummaryTab({ data }: { data: AnalysisData }) {
 
 const styles = StyleSheet.create({
   wrap: { gap: spacing.section },
-  shareBtn: { flexDirection: 'row', gap: spacing.xs, alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: '#E7F9F1' },
+  shareBtn: { flexDirection: 'row', gap: spacing.xs, alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brandTint },
 });

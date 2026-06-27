@@ -87,5 +87,5 @@ function TeamSettingsPage() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.lg },
-  delete: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: '#FFEDED' },
+  delete: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.expenseTint },
 });

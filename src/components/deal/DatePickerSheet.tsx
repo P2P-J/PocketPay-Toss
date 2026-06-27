@@ -3,6 +3,7 @@ import { Modal, View, Pressable, Text, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
+import { shiftMonth } from '../../lib/date';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -22,14 +23,7 @@ export function DatePickerSheet({ visible, value, onSelect, onClose }: Props) {
     if (visible) setYm({ y: Number(value.slice(0, 4)), m: Number(value.slice(5, 7)) });
   }, [visible, value]);
 
-  const shift = (delta: number) =>
-    setYm(({ y, m }) => {
-      let nm = m + delta;
-      let ny = y;
-      if (nm < 1) { nm = 12; ny -= 1; }
-      if (nm > 12) { nm = 1; ny += 1; }
-      return { y: ny, m: nm };
-    });
+  const shift = (delta: number) => setYm((cur) => shiftMonth(cur, delta));
 
   const daysInMonth = new Date(ym.y, ym.m, 0).getDate();
   const firstDow = new Date(ym.y, ym.m - 1, 1).getDay();
