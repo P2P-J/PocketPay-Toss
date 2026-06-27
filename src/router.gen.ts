@@ -3,6 +3,7 @@
 import { Route as _LoginRoute } from '../pages/login';
 import { Route as _TransactionsRoute } from '../pages/transactions';
 import { Route as _AnalysisRoute } from '../pages/analysis';
+import { Route as _AlertsRoute } from '../pages/alerts';
 import { Route as _DealNewRoute } from '../pages/deal-new';
 import { Route as _BudgetSettingsRoute } from '../pages/budget-settings';
 import { Route as _MembersRoute } from '../pages/members';
@@ -23,6 +24,7 @@ declare module '@granite-js/react-native' {
     '/login': (typeof _LoginRoute)['_inputType'];
     '/transactions': (typeof _TransactionsRoute)['_inputType'];
     '/analysis': (typeof _AnalysisRoute)['_inputType'];
+    '/alerts': (typeof _AlertsRoute)['_inputType'];
     '/deal-new': (typeof _DealNewRoute)['_inputType'];
     '/budget-settings': (typeof _BudgetSettingsRoute)['_inputType'];
     '/members': (typeof _MembersRoute)['_inputType'];
@@ -43,6 +45,7 @@ declare module '@granite-js/react-native' {
     '/login': (typeof _LoginRoute)['_outputType'];
     '/transactions': (typeof _TransactionsRoute)['_outputType'];
     '/analysis': (typeof _AnalysisRoute)['_outputType'];
+    '/alerts': (typeof _AlertsRoute)['_outputType'];
     '/deal-new': (typeof _DealNewRoute)['_outputType'];
     '/budget-settings': (typeof _BudgetSettingsRoute)['_outputType'];
     '/members': (typeof _MembersRoute)['_outputType'];
