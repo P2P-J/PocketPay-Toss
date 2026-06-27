@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { PREVIEW_MODE } from '../constants/config';
 import { notificationsApi } from '../api/notifications';
+import { dutchApi } from '../api/dutch';
+import { formatWon } from '../lib/format';
 
 export interface AppAlert {
   id: string;
@@ -8,13 +10,16 @@ export interface AppAlert {
   body: string;
   date: string;
   read: boolean;
-  kind?: 'invite';
+  kind?: 'invite' | 'dutch';
   teamId?: string; // invite일 때 수락/거절 대상
+  dutchId?: string; // dutch일 때 확인(dismiss) 대상
+  amount?: number; // dutch 금액
+  account?: string; // dutch 받을 계좌 안내
 }
 
 // 더미(프리뷰) 샘플 알림
 const SAMPLE: AppAlert[] = [
-  { id: 'al1', title: '정산 요청', body: '‘정기 모임 식사’ 정산이 요청됐어요.', date: '2026-06-26', read: false },
+  { id: 'd0', title: '정산 요청', body: '민수님이 정산을 요청했어요 · 1인당 ₩35,000', date: '2026-06-26', read: false, kind: 'dutch', dutchId: 'sample-d1', amount: 35000, account: '토스뱅크 1000-1234-5678 (김민수)' },
   { id: 'al2', title: '새 거래', body: '‘디즈니랜드 1일권(3인)’ 거래가 등록됐어요.', date: '2026-06-26', read: false },
   { id: 'al3', title: '환영해요', body: '작은 모임에 오신 걸 환영해요!', date: '2026-06-20', read: true },
 ];
@@ -25,6 +30,7 @@ interface AlertsState {
   fetchUnread: () => Promise<void>; // 종 뱃지용(가벼움)
   fetchAlerts: () => Promise<void>; // 알림함 진입 시
   markAllRead: () => Promise<void>; // 알림함 진입 시 읽음 처리
+  dismissDutch: (dutchId: string) => Promise<void>; // 정산 요청 확인
 }
 
 export const useAlertsStore = create<AlertsState>((set) => ({
@@ -43,21 +49,35 @@ export const useAlertsStore = create<AlertsState>((set) => ({
 
   fetchAlerts: async () => {
     if (PREVIEW_MODE) return; // 더미는 SAMPLE 유지
-    try {
-      const res = await notificationsApi.getInvitations();
-      const alerts: AppAlert[] = res.data.map((iv) => ({
-        id: `invite-${iv.teamId}`,
-        title: '모임 초대',
-        body: `‘${iv.teamName}’에 초대받았어요.`,
-        date: (iv.invitedAt ?? '').slice(0, 10),
+    const [invRes, dutchRes] = await Promise.all([
+      notificationsApi.getInvitations().catch(() => ({ data: [] })),
+      dutchApi.list().catch(() => ({ data: [] })),
+    ]);
+    const invites: AppAlert[] = invRes.data.map((iv) => ({
+      id: `invite-${iv.teamId}`,
+      title: '모임 초대',
+      body: `‘${iv.teamName}’에 초대받았어요.`,
+      date: (iv.invitedAt ?? '').slice(0, 10),
+      read: false,
+      kind: 'invite',
+      teamId: iv.teamId,
+    }));
+    const dutches: AppAlert[] = dutchRes.data.map((d) => {
+      const acc = d.accountSnapshot;
+      return {
+        id: `dutch-${d._id}`,
+        title: '정산 요청',
+        body: `${d.requesterDisplayName}님이 정산을 요청했어요 · 1인당 ${formatWon(d.amount)}`,
+        date: (d.createdAt ?? '').slice(0, 10),
         read: false,
-        kind: 'invite',
-        teamId: iv.teamId,
-      }));
-      set({ alerts });
-    } catch {
-      // 무시 — 빈 목록 유지
-    }
+        kind: 'dutch' as const,
+        dutchId: d._id,
+        amount: d.amount,
+        account: acc ? `${acc.bank ?? ''} ${acc.number ?? ''} (${acc.holder ?? ''})`.trim() : undefined,
+      };
+    });
+    const merged = [...invites, ...dutches].sort((a, b) => b.date.localeCompare(a.date));
+    set({ alerts: merged });
   },
 
   markAllRead: async () => {
@@ -65,6 +85,13 @@ export const useAlertsStore = create<AlertsState>((set) => ({
       try { await notificationsApi.markViewed(); } catch { /* 무시 */ }
     }
     set((s) => ({ alerts: s.alerts.map((a) => ({ ...a, read: true })), unreadCount: 0 }));
+  },
+
+  dismissDutch: async (dutchId: string) => {
+    if (!PREVIEW_MODE) {
+      try { await dutchApi.dismiss(dutchId); } catch { /* 무시 */ }
+    }
+    set((s) => ({ alerts: s.alerts.filter((a) => a.dutchId !== dutchId) }));
   },
 }));
 
