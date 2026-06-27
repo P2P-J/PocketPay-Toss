@@ -17,4 +17,8 @@ export const teamApi = {
 
   removeMember: (teamId: string, userId: string) =>
     apiClient.delete(`/teams/${teamId}/members/${userId}`) as Promise<null>,
+
+  // ⚠️ 백엔드 엔드포인트 추가 예정(권한 위임). 더미는 로컬 처리, 실모드는 이 경로 구현 필요.
+  transferOwner: (teamId: string, userId: string) =>
+    apiClient.patch(`/teams/${teamId}/owner`, { userId }) as Promise<{ data: Team }>,
 };

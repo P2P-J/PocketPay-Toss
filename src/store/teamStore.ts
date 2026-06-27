@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { teamApi } from '../api/team';
 import { dealApi } from '../api/deal';
-import { getTeamId } from '../types/team';
+import { getTeamId, getMemberId } from '../types/team';
 import { dealToTransaction, transactionToDealPayload, type Transaction } from '../types/transaction';
 import type { Team, TeamCategory, TeamDisplayMode, TeamAccountMode } from '../types/team';
 import type { Summary, MonthlyStats } from '../types/stats';
@@ -29,6 +29,8 @@ interface TeamState {
   createTeam: (input: NewTeamInput) => Promise<void>;
   updateTeam: (input: NewTeamInput) => Promise<void>;
   deleteTeam: () => Promise<void>;
+  removeMember: (userId: string) => Promise<void>;
+  transferOwner: (userId: string) => Promise<void>;
   addTransaction: (input: Omit<Transaction, 'id'>) => Promise<void>;
   updateTransaction: (id: string, input: Omit<Transaction, 'id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
@@ -314,6 +316,49 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       await get().fetchTeams();
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임 삭제에 실패했어요.' });
+    }
+  },
+
+  removeMember: async (userId) => {
+    const team = get().currentTeam;
+    if (!team) return;
+    const id = getTeamId(team);
+    if (USE_SAMPLE) {
+      const members = (team.members ?? []).filter((m) => getMemberId(m) !== userId);
+      const updated = { ...team, members };
+      set({ teams: get().teams.map((t) => (getTeamId(t) === id ? updated : t)), currentTeam: updated });
+      return;
+    }
+    set({ loading: true, error: null });
+    try {
+      await teamApi.removeMember(id, userId);
+      await get().setCurrentTeam(id);
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : '멤버 강퇴에 실패했어요.' });
+    }
+  },
+
+  transferOwner: async (userId) => {
+    const team = get().currentTeam;
+    if (!team) return;
+    const id = getTeamId(team);
+    if (USE_SAMPLE) {
+      const members = (team.members ?? []).map((m) => {
+        const mid = getMemberId(m);
+        if (mid === userId) return { ...m, role: 'owner' };
+        if (m.role === 'owner') return { ...m, role: 'member' };
+        return m;
+      });
+      const updated = { ...team, members };
+      set({ teams: get().teams.map((t) => (getTeamId(t) === id ? updated : t)), currentTeam: updated });
+      return;
+    }
+    set({ loading: true, error: null });
+    try {
+      await teamApi.transferOwner(id, userId);
+      await get().setCurrentTeam(id);
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : '권한 위임에 실패했어요.' });
     }
   },
 
