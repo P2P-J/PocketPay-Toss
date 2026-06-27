@@ -1,5 +1,5 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { useTeamStore } from '../store/teamStore';
 import { colors } from '../constants/colors';
@@ -22,12 +22,14 @@ function TransactionsPage() {
   const { onEdit, onDelete } = useTransactionActions();
   const [filter, setFilter] = useState<TxFilter>('all');
   const [query, setQuery] = useState('');
-  const q = query.trim();
-  const filtered = transactions.filter((t) => {
-    const byType = filter === 'all' || t.type === filter;
-    const byQuery = !q || (t.merchant ?? '').includes(q) || getCategoryLabel(t.category).includes(q);
-    return byType && byQuery;
-  });
+  const filtered = useMemo(() => {
+    const q = query.trim();
+    return transactions.filter((t) => {
+      const byType = filter === 'all' || t.type === filter;
+      const byQuery = !q || (t.merchant ?? '').includes(q) || getCategoryLabel(t.category).includes(q);
+      return byType && byQuery;
+    });
+  }, [transactions, filter, query]);
 
   return (
     <View style={styles.container}>

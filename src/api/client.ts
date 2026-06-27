@@ -130,10 +130,25 @@ const request = async (
   return handleResponse(response, retryFn);
 };
 
+// 멀티파트 업로드(OCR 등) — Content-Type은 boundary 자동 설정 위해 비움. 401 리프레시 공유.
+const requestForm = async (endpoint: string, form: FormData, isRetry = false): Promise<unknown> => {
+  const headers: Record<string, string> = {};
+  const token = getAuthState?.()?.accessToken;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const response = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    headers,
+    body: form as unknown as RequestInit['body'],
+  });
+  const retryFn = isRetry ? null : () => requestForm(endpoint, form, true);
+  return handleResponse(response, retryFn);
+};
+
 export const apiClient = {
   get: (endpoint: string) => request('GET', endpoint),
   post: (endpoint: string, body?: unknown) => request('POST', endpoint, body),
   put: (endpoint: string, body?: unknown) => request('PUT', endpoint, body),
   patch: (endpoint: string, body?: unknown) => request('PATCH', endpoint, body),
   delete: (endpoint: string) => request('DELETE', endpoint),
+  postForm: (endpoint: string, form: FormData) => requestForm(endpoint, form),
 };
