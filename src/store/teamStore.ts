@@ -142,8 +142,8 @@ export const useTeamStore = create<TeamState>((set, get) => {
   editingTransaction: null,
 
   fetchTeams: async () => {
-    // 이미 로드돼 있으면 다시 시드/조회하지 않음 — 홈 재진입 시 생성한 모임/선택 상태 보존
-    if (get().teams.length > 0) return;
+    // 더미: 이미 로드됐으면 재시드 안 함(생성 모임 보존). 실모드는 재조회 허용(초대 수락 등 반영).
+    if (USE_SAMPLE && get().teams.length > 0) return;
     if (USE_SAMPLE) {
       set({
         teams: sampleTeams,

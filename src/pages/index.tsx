@@ -12,6 +12,7 @@ import { TopCategoryCard } from '../components/home/TopCategoryCard';
 import { TransactionList } from '../components/home/TransactionList';
 import { TabBar } from '../components/layout/TabBar';
 import { useTransactionActions } from '../hooks/useTransactionActions';
+import { useAlertsStore } from '../store/alertsStore';
 
 export const Route = createRoute('/', { component: Home });
 
@@ -22,9 +23,10 @@ function Home() {
   const authLoading = useAuthStore((s) => s.loading);
   const { teams, currentTeam, summary, stats, transactions, loading, error, fetchTeams, setCurrentTeam } = useTeamStore();
   const { onEdit, onDelete } = useTransactionActions();
+  const fetchUnread = useAlertsStore((s) => s.fetchUnread);
 
   useEffect(() => { checkAuth(); }, [checkAuth]);
-  useEffect(() => { if (accessToken) fetchTeams(); }, [accessToken, fetchTeams]);
+  useEffect(() => { if (accessToken) { fetchTeams(); fetchUnread(); } }, [accessToken, fetchTeams, fetchUnread]);
   useEffect(() => { if (!authLoading && !accessToken) navigation.navigate('/login'); }, [authLoading, accessToken, navigation]);
 
   if (!accessToken) return <View style={styles.container} />;
