@@ -16,6 +16,7 @@ function AlertsPage() {
   const alerts = useAlertsStore((s) => s.alerts);
   const fetchAlerts = useAlertsStore((s) => s.fetchAlerts);
   const markAllRead = useAlertsStore((s) => s.markAllRead);
+  const dismissDutch = useAlertsStore((s) => s.dismissDutch);
   const fetchTeams = useTeamStore((s) => s.fetchTeams);
 
   // 진입 시 목록 로드 + 읽음 처리
@@ -68,6 +69,21 @@ function AlertsPage() {
                   </Pressable>
                 </View>
               )}
+              {a.kind === 'dutch' && a.dutchId && (
+                <>
+                  {a.account && (
+                    <View style={styles.accountBox}>
+                      <Txt typography="t7" color={colors.textCaption}>받을 계좌</Txt>
+                      <Txt typography="t6" fontWeight="medium" color={colors.textPrimary}>{a.account}</Txt>
+                    </View>
+                  )}
+                  <View style={styles.actions}>
+                    <Pressable style={[styles.btn, styles.accept]} onPress={() => dismissDutch(a.dutchId!)}>
+                      <Txt typography="t6" fontWeight="bold" color={colors.white}>확인</Txt>
+                    </Pressable>
+                  </View>
+                </>
+              )}
             </View>
           ))}
         </ScrollView>
@@ -81,6 +97,7 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.md },
   card: { backgroundColor: colors.cardBg, borderRadius: radius.card, padding: spacing.cardPadding, gap: spacing.xs },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  accountBox: { backgroundColor: colors.white, borderRadius: radius.button, padding: spacing.md, gap: 2, marginTop: spacing.xs },
   actions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm },
   btn: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 44, borderRadius: radius.button },
   reject: { backgroundColor: colors.grey100 },
