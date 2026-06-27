@@ -10,6 +10,8 @@ import { FormField } from '../components/common/FormField';
 import { avatarColor } from '../constants/avatar';
 import { useProfileStore } from '../store/profileStore';
 import { useAuthStore } from '../store/authStore';
+import { useTeamStore } from '../store/teamStore';
+import { isTeamOwner } from '../types/team';
 import { accountApi } from '../api/account';
 
 const HANDLE_RE = /^[a-z0-9_]{3,20}$/;
@@ -21,6 +23,8 @@ function ProfilePage() {
   const profileStore = useProfileStore();
   const user = useAuthStore((s) => s.user);
   const refreshUser = useAuthStore((s) => s.refreshUser);
+  const logout = useAuthStore((s) => s.logout);
+  const teams = useTeamStore((s) => s.teams);
 
   // 더미: profileStore, 실모드: authStore.user(/account/me)
   const init = PREVIEW_MODE ? profileStore : { name: user?.name ?? '', nickname: user?.nickname ?? '', handle: user?.handle ?? '' };
@@ -53,6 +57,38 @@ function ProfilePage() {
     }
   };
 
+  const onLogout = () => {
+    Alert.alert('로그아웃', '로그아웃 할까요?', [
+      { text: '취소', style: 'cancel' },
+      { text: '로그아웃', onPress: async () => { await logout(); navigation.navigate('/login'); } },
+    ]);
+  };
+
+  const onDeleteAccount = () => {
+    // 방장으로 있는 모임 목록 (프리뷰는 전체를 내 소유로 간주)
+    const ownedNames = (PREVIEW_MODE ? teams : teams.filter((t) => isTeamOwner(t.members, user))).map((t) => t.name);
+    const warn = ownedNames.length
+      ? `방장으로 계신 '${ownedNames.join(', ')}' 모임이 전부 삭제됩니다. 모임이 운영 중이라면 다른 멤버에게 위임한 뒤 탈퇴해 주세요.`
+      : '계정을 삭제하면 모든 데이터가 사라지고 되돌릴 수 없어요.';
+    Alert.alert('계정 탈퇴', warn, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '탈퇴 진행',
+        style: 'destructive',
+        onPress: () => {
+          Alert.alert('한 번 더 확인', '정말 탈퇴할까요? 되돌릴 수 없어요.', [
+            { text: '취소', style: 'cancel' },
+            { text: '영구 탈퇴', style: 'destructive', onPress: async () => {
+              try { if (!PREVIEW_MODE) await accountApi.deleteAccount(); } catch (e) { Alert.alert('탈퇴 실패', e instanceof Error ? e.message : '다시 시도해주세요.'); return; }
+              await logout();
+              navigation.navigate('/login');
+            } },
+          ]);
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={styles.container}>
       <DetailHeader title="프로필" />
@@ -80,6 +116,15 @@ function ProfilePage() {
         <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSave} disabled={!canSave}>
           <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
         </Pressable>
+
+        <View style={styles.account}>
+          <Pressable style={styles.textBtn} onPress={onLogout}>
+            <Txt typography="t5" fontWeight="medium" color={colors.textSecondary}>로그아웃</Txt>
+          </Pressable>
+          <Pressable style={styles.textBtn} onPress={onDeleteAccount}>
+            <Txt typography="t5" fontWeight="medium" color={colors.expense}>계정 탈퇴</Txt>
+          </Pressable>
+        </View>
       </ScrollView>
     </View>
   );
@@ -92,4 +137,6 @@ const styles = StyleSheet.create({
   avatar: { width: 72, height: 72, borderRadius: 36, alignItems: 'center', justifyContent: 'center' },
   save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand, marginTop: spacing.sm },
   saveOff: { backgroundColor: colors.grey300 },
+  account: { marginTop: spacing.section, flexDirection: 'row', justifyContent: 'center', gap: spacing.xl },
+  textBtn: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
 });
