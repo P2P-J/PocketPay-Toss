@@ -30,6 +30,7 @@ export interface Team {
   id?: string;
   _id?: string;
   name: string;
+  emoji?: string;
   description?: string;
   members?: Member[];
   category?: TeamCategory;

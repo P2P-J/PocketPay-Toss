@@ -43,6 +43,7 @@ const EMPTY_SUMMARY: Summary = { income: 0, expense: 0, balance: 0 };
 // 새 모임 생성 입력 (백엔드 Team 생성 페이로드와 동일 필드)
 export interface NewTeamInput {
   name: string;
+  emoji?: string;
   description?: string;
   category: TeamCategory;
   displayMode: TeamDisplayMode;
@@ -233,6 +234,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
       const team: Team = {
         _id: `local-team-${++localTeamSeq}`,
         name: input.name,
+        emoji: input.emoji,
         description: input.description,
         category: input.category,
         displayMode: input.displayMode,
@@ -263,6 +265,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
     const id = getTeamId(team);
     const fields = {
       name: input.name,
+      emoji: input.emoji,
       description: input.description,
       category: input.category,
       displayMode: input.displayMode,

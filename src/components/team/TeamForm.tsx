@@ -8,6 +8,8 @@ import { FormField } from '../common/FormField';
 import type { NewTeamInput } from '../../store/teamStore';
 import type { TeamCategory, TeamDisplayMode, TeamAccountMode } from '../../types/team';
 
+const EMOJI_OPTIONS = ['👥', '🍻', '⚽', '🎮', '📚', '✈️', '🍱', '🎵', '💼', '🏠', '🎨', '🐶', '☕', '🎬', '💪', '🌱'];
+
 function Segmented<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[] }) {
   return (
     <View style={styles.seg}>
@@ -32,6 +34,7 @@ interface Props {
 // 모임 생성/설정 공용 폼
 export function TeamForm({ initial, submitLabel, onSubmit }: Props) {
   const [name, setName] = useState(initial?.name ?? '');
+  const [emoji, setEmoji] = useState(initial?.emoji ?? '');
   const [description, setDescription] = useState(initial?.description ?? '');
   const [category, setCategory] = useState<TeamCategory>(initial?.category ?? 'friend');
   const [displayMode, setDisplayMode] = useState<TeamDisplayMode>(initial?.displayMode ?? 'nickname');
@@ -50,6 +53,7 @@ export function TeamForm({ initial, submitLabel, onSubmit }: Props) {
     try {
       await onSubmit({
         name: name.trim(),
+        emoji: emoji || undefined,
         description: description.trim() || undefined,
         category,
         displayMode,
@@ -66,6 +70,22 @@ export function TeamForm({ initial, submitLabel, onSubmit }: Props) {
   return (
     <View style={styles.wrap}>
       <FormField label="모임 이름" value={name} onChangeText={setName} placeholder="예: 청바지" maxLength={50} />
+
+      <View style={styles.field}>
+        <Txt typography="t7" color={colors.textSecondary}>모임 이모지 (선택)</Txt>
+        <View style={styles.emojiGrid}>
+          {EMOJI_OPTIONS.map((e) => {
+            const on = emoji === e;
+            return (
+              <Pressable key={e} style={[styles.emojiItem, on && styles.emojiItemOn]} onPress={() => setEmoji(on ? '' : e)}>
+                <Text allowFontScaling={false} style={styles.emojiText}>{e}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Txt typography="t7" color={colors.textCaption}>선택 안 하면 모임명 앞글자로 보여요</Txt>
+      </View>
+
       <FormField label="소개 (선택)" value={description} onChangeText={setDescription} placeholder="모임을 한 줄로 소개해요" maxLength={200} />
 
       <View style={styles.field}>
@@ -123,6 +143,10 @@ const styles = StyleSheet.create({
   seg: { flexDirection: 'row', backgroundColor: colors.grey100, borderRadius: radius.button, padding: 4 },
   segItem: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 44, borderRadius: radius.button - 2 },
   segItemOn: { backgroundColor: colors.white },
+  emojiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  emojiItem: { width: 44, height: 44, borderRadius: radius.button, backgroundColor: colors.grey100, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.grey100 },
+  emojiItemOn: { borderColor: colors.brand, backgroundColor: '#E7F9F1' },
+  emojiText: { fontSize: 22, lineHeight: 28, includeFontPadding: false },
   feeHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   feeBody: { gap: spacing.md, backgroundColor: colors.cardBg, borderRadius: radius.card, padding: spacing.lg },
   feeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
