@@ -1,4 +1,5 @@
 import { useTeamStore } from './teamStore';
+import { getMemberId, type Team } from '../types/team';
 
 // recompute는 "이번 달"을 new Date() 기준으로 보므로, 테스트는 현재 월 날짜를 동적으로 사용
 const now = new Date();
@@ -54,4 +55,33 @@ it('deleteTransaction은 거래를 제거하고 요약을 재계산한다', () =
   expect(s.transactions).toHaveLength(1);
   expect(s.summary.expense).toBe(0);
   expect(s.summary.income).toBe(5000);
+});
+
+const teamFixture = (): Team => ({
+  _id: 't',
+  name: 'T',
+  members: [
+    { user: { _id: 'u1', nickname: '방장' }, role: 'owner' },
+    { user: { _id: 'u2', nickname: '멤버' }, role: 'member' },
+  ],
+});
+
+it('removeMember(로컬)는 멤버를 제거한다', async () => {
+  const team = teamFixture();
+  useTeamStore.setState({ teams: [team], currentTeam: team });
+  await useTeamStore.getState().removeMember('u2');
+
+  const members = useTeamStore.getState().currentTeam?.members ?? [];
+  expect(members).toHaveLength(1);
+  expect(getMemberId(members[0]!)).toBe('u1');
+});
+
+it('transferOwner(로컬)는 방장 역할을 넘긴다', async () => {
+  const team = teamFixture();
+  useTeamStore.setState({ teams: [team], currentTeam: team });
+  await useTeamStore.getState().transferOwner('u2');
+
+  const members = useTeamStore.getState().currentTeam?.members ?? [];
+  expect(members.find((m) => getMemberId(m) === 'u2')?.role).toBe('owner');
+  expect(members.find((m) => getMemberId(m) === 'u1')?.role).toBe('member');
 });

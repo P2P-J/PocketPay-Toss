@@ -116,7 +116,22 @@ function statePatch(transactions: Transaction[]) {
   return { transactions, summary: r.summary, stats: r.stats };
 }
 
-export const useTeamStore = create<TeamState>((set, get) => ({
+export const useTeamStore = create<TeamState>((set, get) => {
+  // 실모드 변이 공통: 현재 팀 기준 loading→호출→재조회→에러 처리 (USE_SAMPLE 분기는 각 액션에서)
+  const runMutation = async (errMsg: string, call: (teamId: string) => Promise<unknown>) => {
+    const team = get().currentTeam;
+    if (!team) return;
+    const id = getTeamId(team);
+    set({ loading: true, error: null });
+    try {
+      await call(id);
+      await get().setCurrentTeam(id);
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : errMsg });
+    }
+  };
+
+  return {
   teams: [],
   currentTeam: null,
   summary: EMPTY_SUMMARY,
@@ -193,16 +208,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       set(statePatch([tx, ...get().transactions]));
       return;
     }
-    const team = get().currentTeam;
-    if (!team) return;
-    const teamId = getTeamId(team);
-    set({ loading: true, error: null });
-    try {
-      await dealApi.create(transactionToDealPayload({ ...input, teamId }));
-      await get().setCurrentTeam(teamId); // 등록 후 재조회
-    } catch (e) {
-      set({ loading: false, error: e instanceof Error ? e.message : '거래 등록에 실패했어요.' });
-    }
+    await runMutation('거래 등록에 실패했어요.', (teamId) => dealApi.create(transactionToDealPayload({ ...input, teamId })));
   },
 
   updateTransaction: async (id, input) => {
@@ -210,15 +216,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       set(statePatch(get().transactions.map((t) => (t.id === id ? { ...input, id } : t))));
       return;
     }
-    const team = get().currentTeam;
-    if (!team) return;
-    set({ loading: true, error: null });
-    try {
-      await dealApi.update(id, transactionToDealPayload(input));
-      await get().setCurrentTeam(getTeamId(team));
-    } catch (e) {
-      set({ loading: false, error: e instanceof Error ? e.message : '거래 수정에 실패했어요.' });
-    }
+    await runMutation('거래 수정에 실패했어요.', () => dealApi.update(id, transactionToDealPayload(input)));
   },
 
   deleteTransaction: async (id) => {
@@ -226,15 +224,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       set(statePatch(get().transactions.filter((t) => t.id !== id)));
       return;
     }
-    const team = get().currentTeam;
-    if (!team) return;
-    set({ loading: true, error: null });
-    try {
-      await dealApi.remove(id);
-      await get().setCurrentTeam(getTeamId(team));
-    } catch (e) {
-      set({ loading: false, error: e instanceof Error ? e.message : '거래 삭제에 실패했어요.' });
-    }
+    await runMutation('거래 삭제에 실패했어요.', () => dealApi.remove(id));
   },
 
   createTeam: async (input) => {
@@ -286,13 +276,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       set({ teams: get().teams.map((t) => (getTeamId(t) === id ? updated : t)), currentTeam: updated });
       return;
     }
-    set({ loading: true, error: null });
-    try {
-      await teamApi.update(id, fields);
-      await get().setCurrentTeam(id);
-    } catch (e) {
-      set({ loading: false, error: e instanceof Error ? e.message : '모임 수정에 실패했어요.' });
-    }
+    await runMutation('모임 수정에 실패했어요.', () => teamApi.update(id, fields));
   },
 
   deleteTeam: async () => {
@@ -329,13 +313,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       set({ teams: get().teams.map((t) => (getTeamId(t) === id ? updated : t)), currentTeam: updated });
       return;
     }
-    set({ loading: true, error: null });
-    try {
-      await teamApi.removeMember(id, userId);
-      await get().setCurrentTeam(id);
-    } catch (e) {
-      set({ loading: false, error: e instanceof Error ? e.message : '멤버 강퇴에 실패했어요.' });
-    }
+    await runMutation('멤버 강퇴에 실패했어요.', (teamId) => teamApi.removeMember(teamId, userId));
   },
 
   transferOwner: async (userId) => {
@@ -353,17 +331,12 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       set({ teams: get().teams.map((t) => (getTeamId(t) === id ? updated : t)), currentTeam: updated });
       return;
     }
-    set({ loading: true, error: null });
-    try {
-      await teamApi.transferOwner(id, userId);
-      await get().setCurrentTeam(id);
-    } catch (e) {
-      set({ loading: false, error: e instanceof Error ? e.message : '권한 위임에 실패했어요.' });
-    }
+    await runMutation('권한 위임에 실패했어요.', (teamId) => teamApi.transferOwner(teamId, userId));
   },
 
   setEditingTransaction: (tx) => set({ editingTransaction: tx }),
 
   reset: () =>
     set({ teams: [], currentTeam: null, summary: EMPTY_SUMMARY, stats: null, transactions: [], loading: false, error: null, editingTransaction: null }),
-}));
+  };
+});

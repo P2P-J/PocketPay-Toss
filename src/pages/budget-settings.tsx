@@ -17,7 +17,7 @@ function BudgetSettingsPage() {
   const navigation = useNavigation();
   const teamId = useCurrentTeamId();
   const config = useBudgetStore(selectBudget(teamId));
-  const setBudget = useBudgetStore((s) => s.setBudget);
+  const setBudget = useBudgetStore((s) => s.set);
 
   const [totalLimit, setTotalLimit] = useState(config.totalLimit);
   const [limits, setLimits] = useState<BudgetLimit[]>(config.limits);

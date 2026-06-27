@@ -19,7 +19,7 @@ const RULES: { value: SettlementMethod; label: string; desc: string }[] = [
 function SettlementRulePage() {
   const teamId = useCurrentTeamId();
   const method = useSettlementStore(selectMethod(teamId));
-  const setMethod = useSettlementStore((s) => s.setMethod);
+  const setMethod = useSettlementStore((s) => s.set);
 
   return (
     <View style={styles.container}>

@@ -20,7 +20,7 @@ function AccountPage() {
   const currentTeam = useTeamStore((s) => s.currentTeam);
   const setCurrentTeam = useTeamStore((s) => s.setCurrentTeam);
   const dummyAccount = useAccountStore(selectAccount(teamId));
-  const setAccount = useAccountStore((s) => s.setAccount);
+  const setAccount = useAccountStore((s) => s.set);
 
   // 더미: accountStore, 실모드: Team.account
   const account = PREVIEW_MODE ? dummyAccount : currentTeam?.account ?? { bank: '', number: '', holder: '' };
