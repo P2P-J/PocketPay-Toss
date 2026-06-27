@@ -1,15 +1,21 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Icon, Txt } from '@toss/tds-react-native';
+import { View, TextInput, StyleSheet } from 'react-native';
+import { Icon } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 
-// 시각용 검색바 (검색 동작은 추후) — 입력 필드 모양만.
-export function SearchBar() {
+export function SearchBar({ value, onChangeText }: { value: string; onChangeText: (text: string) => void }) {
   return (
     <View style={styles.bar}>
       <Icon name="icon-search-mono" size={18} color={colors.textTertiary} />
-      <Txt typography="t5" color={colors.textTertiary}>거래 내용 검색</Txt>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder="거래 내용 검색"
+        placeholderTextColor={colors.textTertiary}
+        returnKeyType="search"
+      />
     </View>
   );
 }
@@ -24,4 +30,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     height: 48,
   },
+  input: { flex: 1, fontSize: 15, color: colors.textPrimary, padding: 0 },
 });

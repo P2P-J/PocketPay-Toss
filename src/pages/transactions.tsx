@@ -10,6 +10,7 @@ import { FilterChips, type TxFilter } from '../components/transactions/FilterChi
 import { TransactionList } from '../components/home/TransactionList';
 import { TabBar } from '../components/layout/TabBar';
 import { CenterNotice } from '../components/common/CenterNotice';
+import { getCategoryLabel } from '../constants/categories';
 import { useTransactionActions } from '../hooks/useTransactionActions';
 
 export const Route = createRoute('/transactions', { component: TransactionsPage });
@@ -20,7 +21,13 @@ function TransactionsPage() {
   const error = useTeamStore((s) => s.error);
   const { onEdit, onDelete } = useTransactionActions();
   const [filter, setFilter] = useState<TxFilter>('all');
-  const filtered = filter === 'all' ? transactions : transactions.filter((t) => t.type === filter);
+  const [query, setQuery] = useState('');
+  const q = query.trim();
+  const filtered = transactions.filter((t) => {
+    const byType = filter === 'all' || t.type === filter;
+    const byQuery = !q || (t.merchant ?? '').includes(q) || getCategoryLabel(t.category).includes(q);
+    return byType && byQuery;
+  });
 
   return (
     <View style={styles.container}>
@@ -30,7 +37,7 @@ function TransactionsPage() {
           <CenterNotice message={error} tone="error" />
         ) : (
           <>
-            <SearchBar />
+            <SearchBar value={query} onChangeText={setQuery} />
             <View style={styles.chips}>
               <FilterChips value={filter} onChange={setFilter} />
             </View>
