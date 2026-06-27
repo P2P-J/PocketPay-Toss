@@ -8,7 +8,7 @@ import { DetailHeader } from '../components/layout/DetailHeader';
 
 export const Route = createRoute('/support', { component: SupportPage });
 
-const SUPPORT_EMAIL = 'help@jakeunmoim.app';
+const SUPPORT_EMAIL = 'pocketpay2026@gmail.com';
 
 const FAQ = [
   { q: '거래는 어떻게 추가하나요?', a: '홈이나 거래 탭의 + 버튼을 눌러 금액·카테고리를 입력하면 돼요. 영수증을 촬영하면 거래처·금액·날짜가 자동으로 채워져요.' },

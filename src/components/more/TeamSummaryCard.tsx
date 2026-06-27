@@ -13,7 +13,7 @@ export function TeamSummaryCard({ team }: { team: Team | null }) {
   return (
     <Pressable style={styles.card} onPress={() => navigation.navigate('/members' as '/')}>
       <View style={styles.icon}>
-        <Text allowFontScaling={false} style={styles.emoji}>👖</Text>
+        <Txt typography="t4" fontWeight="bold" color={colors.white}>{name.slice(0, 1)}</Txt>
       </View>
       <View style={styles.texts}>
         <Txt typography="t4" fontWeight="bold" color={colors.textPrimary} numberOfLines={1}>{name}</Txt>
@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emoji: { fontSize: 24, lineHeight: 31, includeFontPadding: false },
   texts: { flex: 1, gap: 2 },
   chevron: { fontSize: 22, color: colors.textTertiary },
 });
