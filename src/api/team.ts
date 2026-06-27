@@ -12,4 +12,9 @@ export const teamApi = {
 
   inviteMember: (teamId: string, handle: string) =>
     apiClient.post(`/teams/${teamId}/members`, { handle }) as Promise<{ data: Team }>,
+
+  remove: (teamId: string) => apiClient.delete(`/teams/${teamId}`) as Promise<null>,
+
+  removeMember: (teamId: string, userId: string) =>
+    apiClient.delete(`/teams/${teamId}/members/${userId}`) as Promise<null>,
 };

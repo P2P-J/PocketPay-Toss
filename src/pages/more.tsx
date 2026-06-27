@@ -5,6 +5,7 @@ import { useTeamStore } from '../store/teamStore';
 import { useAccountStore, selectAccount } from '../store/accountStore';
 import { getTeamId } from '../types/team';
 import { PREVIEW_MODE } from '../constants/config';
+import { useIsOwner } from '../hooks/useIsOwner';
 import { colors } from '../constants/colors';
 import { spacing } from '../constants/spacing';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -19,6 +20,14 @@ function MorePage() {
   const currentTeam = useTeamStore((s) => s.currentTeam);
   const dummyAccount = useAccountStore(selectAccount(currentTeam ? getTeamId(currentTeam) : ''));
   const accountBank = PREVIEW_MODE ? dummyAccount.bank : currentTeam?.account?.bank;
+  const isOwner = useIsOwner();
+
+  const manageItems = [
+    { emoji: '👥', label: '멤버 관리', value: `${currentTeam?.members?.length ?? 0}명`, path: '/members' },
+    { emoji: '🧾', label: '정산 규칙', path: '/settlement-rule' },
+    { emoji: '🏷️', label: '카테고리 설정', path: '/category-settings' },
+    ...(isOwner ? [{ emoji: '⚙️', label: '모임 설정', path: '/team-settings' }] : []),
+  ];
 
   return (
     <View style={styles.container}>
@@ -30,14 +39,7 @@ function MorePage() {
             title="내 계정"
             items={[{ emoji: '🙂', label: '프로필', path: '/profile' }]}
           />
-          <MenuSection
-            title="모임 관리"
-            items={[
-              { emoji: '👥', label: '멤버 관리', value: `${currentTeam?.members?.length ?? 0}명`, path: '/members' },
-              { emoji: '🧾', label: '정산 규칙', path: '/settlement-rule' },
-              { emoji: '🏷️', label: '카테고리 설정', path: '/category-settings' },
-            ]}
-          />
+          <MenuSection title="모임 관리" items={manageItems} />
           <MenuSection
             title="계좌 · 알림"
             items={[
