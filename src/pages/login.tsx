@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/authStore';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { Sparkle } from '../components/common/Sparkle';
+import { SoftBackground } from '../components/common/SoftBackground';
 
 export const Route = createRoute('/login', { component: Login });
 
@@ -32,10 +33,7 @@ function Login() {
 
   return (
     <View style={styles.container}>
-      {/* 파스텔 배경 블롭 */}
-      <View pointerEvents="none" style={[styles.blob, styles.blobGreen]} />
-      <View pointerEvents="none" style={[styles.blob, styles.blobBlue]} />
-      <View pointerEvents="none" style={[styles.blob, styles.blobPink]} />
+      <SoftBackground />
 
       <View style={styles.hero}>
         <View style={styles.logoBadge}>
@@ -73,10 +71,6 @@ function Login() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.screenX, paddingTop: 80, paddingBottom: 40, justifyContent: 'space-between', overflow: 'hidden' },
-  blob: { position: 'absolute', width: 320, height: 320, borderRadius: 160, opacity: 0.5 },
-  blobGreen: { backgroundColor: colors.brandTint, top: -90, left: -80 },
-  blobBlue: { backgroundColor: '#EAF2FE', top: 40, right: -120 },
-  blobPink: { backgroundColor: '#FFF0F0', bottom: 60, left: -110 },
   hero: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.sm },
   logoBadge: { width: 84, height: 84, borderRadius: 26, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md, shadowColor: colors.brand, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
   title: { marginTop: spacing.xs },

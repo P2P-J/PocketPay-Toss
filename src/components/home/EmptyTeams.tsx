@@ -6,6 +6,7 @@ import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { PREVIEW_MODE } from '../../constants/config';
 import { Sparkle } from '../common/Sparkle';
+import { SoftBackground } from '../common/SoftBackground';
 import { JoinCodeSheet } from '../team/JoinCodeSheet';
 import { useTeamStore } from '../../store/teamStore';
 import { getTeamId } from '../../types/team';
@@ -30,8 +31,6 @@ export function EmptyTeams() {
     loop.start();
     return () => loop.stop();
   }, [drift]);
-  const up = drift.interpolate({ inputRange: [0, 1], outputRange: [0, -22] });
-  const down = drift.interpolate({ inputRange: [0, 1], outputRange: [0, 22] });
   const float = drift.interpolate({ inputRange: [0, 1], outputRange: [0, -10] });
 
   const onJoin = async (code: string) => {
@@ -57,10 +56,7 @@ export function EmptyTeams() {
 
   return (
     <View style={styles.wrap}>
-      {/* 움직이는 파스텔 배경 */}
-      <Animated.View pointerEvents="none" style={[styles.blob, styles.blobGreen, { transform: [{ translateY: up }] }]} />
-      <Animated.View pointerEvents="none" style={[styles.blob, styles.blobBlue, { transform: [{ translateY: down }] }]} />
-      <Animated.View pointerEvents="none" style={[styles.blob, styles.blobPink, { transform: [{ translateY: up }] }]} />
+      <SoftBackground />
 
       <View style={styles.hero}>
         <Animated.View style={[styles.badge, { transform: [{ translateY: float }] }]}>
@@ -86,10 +82,6 @@ export function EmptyTeams() {
 
 const styles = StyleSheet.create({
   wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.screenX, overflow: 'hidden' },
-  blob: { position: 'absolute', width: 300, height: 300, borderRadius: 150, opacity: 0.45 },
-  blobGreen: { backgroundColor: colors.brandTint, top: -40, left: -90 },
-  blobBlue: { backgroundColor: '#EAF2FE', top: 120, right: -110 },
-  blobPink: { backgroundColor: '#FFF0F0', bottom: -30, left: -70 },
   hero: { alignItems: 'center', gap: spacing.sm },
   badge: { width: 80, height: 80, borderRadius: 26, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md, shadowColor: colors.brand, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
   sub: { textAlign: 'center', lineHeight: 22, marginTop: spacing.xs },
