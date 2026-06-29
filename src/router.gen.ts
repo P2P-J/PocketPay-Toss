@@ -18,6 +18,7 @@ import { Route as _ProfileRoute } from '../pages/profile';
 import { Route as _TeamSettingsRoute } from '../pages/team-settings';
 import { Route as _FeesRoute } from '../pages/fees';
 import { Route as _OnboardingRoute } from '../pages/onboarding';
+import { Route as _JoinRoute } from '../pages/join';
 import { Route as _MoreRoute } from '../pages/more';
 import { Route as _IndexRoute } from '../pages/';
 
@@ -41,6 +42,7 @@ declare module '@granite-js/react-native' {
     '/team-settings': (typeof _TeamSettingsRoute)['_inputType'];
     '/fees': (typeof _FeesRoute)['_inputType'];
     '/onboarding': (typeof _OnboardingRoute)['_inputType'];
+    '/join': (typeof _JoinRoute)['_inputType'];
     '/more': (typeof _MoreRoute)['_inputType'];
     '/': (typeof _IndexRoute)['_inputType'];
   }
@@ -64,6 +66,7 @@ declare module '@granite-js/react-native' {
     '/team-settings': (typeof _TeamSettingsRoute)['_outputType'];
     '/fees': (typeof _FeesRoute)['_outputType'];
     '/onboarding': (typeof _OnboardingRoute)['_outputType'];
+    '/join': (typeof _JoinRoute)['_outputType'];
     '/more': (typeof _MoreRoute)['_outputType'];
     '/': (typeof _IndexRoute)['_outputType'];
   }

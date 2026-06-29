@@ -1,5 +1,5 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { useAuthStore } from '../store/authStore';
@@ -12,6 +12,9 @@ import { TopCategoryCard } from '../components/home/TopCategoryCard';
 import { TransactionList } from '../components/home/TransactionList';
 import { EmptyTeams } from '../components/home/EmptyTeams';
 import { TabBar } from '../components/layout/TabBar';
+import { getTeamId } from '../types/team';
+import { teamApi } from '../api/team';
+import { popInvite } from '../lib/inviteStash';
 import { useTransactionActions } from '../hooks/useTransactionActions';
 import { useAlertsStore } from '../store/alertsStore';
 import { PREVIEW_MODE } from '../constants/config';
@@ -33,6 +36,24 @@ function Home() {
   useEffect(() => { if (!authLoading && !accessToken) navigation.navigate('/login'); }, [authLoading, accessToken, navigation]);
   // 신규유저(핸들 없음) → 온보딩 프로필. 프리뷰는 더미라 건너뜀.
   useEffect(() => { if (!PREVIEW_MODE && accessToken && user && !user.handle) navigation.navigate('/onboarding'); }, [accessToken, user, navigation]);
+
+  // 딥링크로 보관된 초대 토큰 자동 참가 (로그인+온보딩 완료 후 1회)
+  const inviteConsumed = useRef(false);
+  useEffect(() => {
+    if (PREVIEW_MODE || !accessToken || !user?.handle || inviteConsumed.current) return;
+    inviteConsumed.current = true;
+    (async () => {
+      const token = await popInvite();
+      if (!token) return;
+      try {
+        const res = await teamApi.joinByToken(token);
+        await fetchTeams();
+        await setCurrentTeam(getTeamId(res.data.team));
+      } catch {
+        // 만료/무효 초대는 조용히 무시
+      }
+    })();
+  }, [accessToken, user, fetchTeams, setCurrentTeam]);
 
   if (!accessToken) return <View style={[styles.container, styles.center]}><ActivityIndicator color={colors.brand} /></View>;
 
