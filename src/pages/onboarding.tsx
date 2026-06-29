@@ -19,7 +19,7 @@ function OnboardingPage() {
   const refreshUser = useAuthStore((s) => s.refreshUser);
 
   const [name, setName] = useState(user?.name ?? '');
-  const [nickname, setNickname] = useState(user?.nickname ?? '');
+  const [nickname, setNickname] = useState(''); // 실명으로 채우지 않음 — 직접 입력
   const [handle, setHandle] = useState('');
   const [check, setCheck] = useState<CheckState>({ state: 'idle' });
   const [saving, setSaving] = useState(false);
@@ -28,7 +28,7 @@ function OnboardingPage() {
   useEffect(() => {
     const h = handle.trim().toLowerCase();
     if (!h) { setCheck({ state: 'idle' }); return; }
-    if (!isValidHandle(h)) { setCheck({ state: 'invalid', msg: '영문 소문자·숫자·_ 3~20자' }); return; }
+    if (!isValidHandle(h)) { setCheck({ state: 'invalid', msg: '영문 소문자, 숫자, _ 3~20자' }); return; }
     setCheck({ state: 'checking' });
     const t = setTimeout(async () => {
       try {
@@ -74,8 +74,8 @@ function OnboardingPage() {
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <Txt typography="t5" color={colors.textSecondary} style={styles.intro}>환영해요! 모임에서 쓸 프로필을 만들어요.</Txt>
         <FormField label="실명" value={name} onChangeText={setName} placeholder="실명" maxLength={30} hint="정산·회비 안내에 쓰일 수 있어요" />
-        <FormField label="닉네임" value={nickname} onChangeText={setNickname} placeholder="닉네임" maxLength={20} hint="모임에서 보여질 이름" />
-        <FormField label="고유 ID (핸들)" value={handle} onChangeText={setHandle} placeholder="영문 소문자·숫자·_" autoCapitalize="none" maxLength={20} hint={handleHint} error={handleError} />
+        <FormField label="닉네임" value={nickname} onChangeText={setNickname} placeholder="모임에서 보여질 이름" maxLength={20} />
+        <FormField label="고유 ID (핸들)" value={handle} onChangeText={setHandle} placeholder="영문 소문자, 숫자, _" autoCapitalize="none" maxLength={20} hint={handleHint} error={handleError} />
       </ScrollView>
       <View style={styles.bottom}>
         <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSubmit} disabled={!canSave}>
