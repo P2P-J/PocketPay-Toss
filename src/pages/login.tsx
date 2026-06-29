@@ -2,10 +2,10 @@ import { createRoute } from '@granite-js/react-native';
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
-import Svg, { Path } from 'react-native-svg';
 import { useAuthStore } from '../store/authStore';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
+import { Sparkle } from '../components/common/Sparkle';
 
 export const Route = createRoute('/login', { component: Login });
 
@@ -14,17 +14,6 @@ const FEATURES = [
   '회비·정산, 누가 얼마인지 한눈에',
   '월말 리포트를 단톡방에 바로 공유',
 ];
-
-function Sparkle({ size = 40, color = colors.white }: { size?: number; color?: string }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
-      <Path
-        d="M12 2 C12.6 7.2 13.8 9.4 22 12 C13.8 14.6 12.6 16.8 12 22 C11.4 16.8 10.2 14.6 2 12 C10.2 9.4 11.4 7.2 12 2 Z"
-        fill={color}
-      />
-    </Svg>
-  );
-}
 
 function Login() {
   const navigation = Route.useNavigation();

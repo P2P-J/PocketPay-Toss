@@ -10,6 +10,7 @@ import { TeamHeader } from '../components/team/TeamHeader';
 import { BalanceCard } from '../components/home/BalanceCard';
 import { TopCategoryCard } from '../components/home/TopCategoryCard';
 import { TransactionList } from '../components/home/TransactionList';
+import { EmptyTeams } from '../components/home/EmptyTeams';
 import { TabBar } from '../components/layout/TabBar';
 import { useTransactionActions } from '../hooks/useTransactionActions';
 import { useAlertsStore } from '../store/alertsStore';
@@ -44,7 +45,7 @@ function Home() {
         ) : error ? (
           <View style={styles.center}><Txt typography="t5" color={colors.expense}>{error}</Txt></View>
         ) : teams.length === 0 ? (
-          <View style={styles.center}><Txt typography="t5" color={colors.textCaption}>아직 모임이 없어요</Txt></View>
+          <EmptyTeams />
         ) : (
           <ScrollView contentContainerStyle={styles.scroll}>
             <BalanceCard balance={summary.balance} income={stats?.current.income ?? 0} expense={stats?.current.expense ?? 0} />
