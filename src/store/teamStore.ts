@@ -29,6 +29,7 @@ interface TeamState {
   createTeam: (input: NewTeamInput) => Promise<void>;
   updateTeam: (input: NewTeamInput) => Promise<void>;
   deleteTeam: () => Promise<void>;
+  leaveTeam: () => Promise<void>;
   removeMember: (userId: string) => Promise<void>;
   transferOwner: (userId: string) => Promise<void>;
   addTransaction: (input: Omit<Transaction, 'id'>) => Promise<void>;
@@ -308,6 +309,30 @@ export const useTeamStore = create<TeamState>((set, get) => {
       await get().fetchTeams();
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임 삭제에 실패했어요.' });
+    }
+  },
+
+  leaveTeam: async () => {
+    const team = get().currentTeam;
+    if (!team) return;
+    const id = getTeamId(team);
+    if (USE_SAMPLE) {
+      const remaining = get().teams.filter((t) => getTeamId(t) !== id);
+      const next = remaining[0] ?? null;
+      set({
+        teams: remaining,
+        currentTeam: next,
+        ...statePatch(next && getTeamId(next) === 't1' ? sampleTransactions : []),
+      });
+      return;
+    }
+    set({ loading: true, error: null });
+    try {
+      await teamApi.leaveTeam(id);
+      set({ teams: [], currentTeam: null });
+      await get().fetchTeams();
+    } catch (e) {
+      set({ loading: false, error: e instanceof Error ? e.message : '모임 나가기에 실패했어요.' });
     }
   },
 
