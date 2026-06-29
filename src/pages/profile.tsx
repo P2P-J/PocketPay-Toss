@@ -33,7 +33,7 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false);
 
   const handleValid = isValidHandle(handle);
-  const handleError = handle.trim() && !handleValid ? '영문 소문자·숫자·_ 3~20자' : undefined;
+  const handleError = handle.trim() && !handleValid ? '영문 소문자, 숫자, _ 3~20자' : undefined;
   const canSave = name.trim().length > 0 && nickname.trim().length > 0 && handleValid && !saving;
 
   const onSave = async () => {
@@ -102,10 +102,10 @@ function ProfilePage() {
           label="고유 ID"
           value={handle}
           onChangeText={setHandle}
-          placeholder="영문 소문자·숫자·_"
+          placeholder="영문 소문자, 숫자, _"
           autoCapitalize="none"
           maxLength={20}
-          hint="멤버 초대 시 검색에 쓰여요"
+          hint="멤버 초대 시 검색에 쓰여요 · 30일에 한 번 바꿀 수 있어요"
           error={handleError}
         />
 

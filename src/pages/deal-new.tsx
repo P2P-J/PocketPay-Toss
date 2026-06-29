@@ -132,6 +132,28 @@ function DealNewPage() {
           })}
         </View>
 
+        {/* 영수증 (촬영/앨범 → OCR 자동채움) — 맨 위 */}
+        <View style={styles.field}>
+          <Txt typography="t7" color={colors.textSecondary}>영수증</Txt>
+          {receiptUri ? (
+            <Pressable style={styles.receiptPreview} onPress={onAttach}>
+              <Image source={{ uri: receiptUri }} style={styles.receiptImg} resizeMode="cover" />
+              {ocrLoading && (
+                <View style={styles.ocrOverlay}>
+                  <ActivityIndicator color={colors.white} />
+                  <Txt typography="t7" fontWeight="medium" color={colors.white}>영수증 분석 중…</Txt>
+                </View>
+              )}
+            </Pressable>
+          ) : (
+            <Pressable style={styles.receiptBtn} onPress={onAttach}>
+              <Text style={styles.receiptEmoji}>📷</Text>
+              <Txt typography="t5" fontWeight="medium" color={colors.textSecondary}>영수증 첨부하기</Txt>
+            </Pressable>
+          )}
+          <Txt typography="t7" color={colors.textCaption}>영수증을 찍으면 거래처·금액·날짜가 자동으로 채워져요</Txt>
+        </View>
+
         {/* 금액 */}
         <View style={styles.field}>
           <Txt typography="t7" color={colors.textSecondary}>금액</Txt>
@@ -168,32 +190,6 @@ function DealNewPage() {
           <CategoryPicker type={type} value={category} onChange={setCategory} />
         </View>
 
-        {/* 영수증 (촬영/앨범 → OCR 자동채움) */}
-        <View style={styles.field}>
-          <Txt typography="t7" color={colors.textSecondary}>영수증</Txt>
-          {receiptUri ? (
-            <Pressable style={styles.receiptPreview} onPress={onAttach}>
-              <Image source={{ uri: receiptUri }} style={styles.receiptImg} resizeMode="cover" />
-              {ocrLoading && (
-                <View style={styles.ocrOverlay}>
-                  <ActivityIndicator color={colors.white} />
-                  <Txt typography="t7" fontWeight="medium" color={colors.white}>영수증 분석 중…</Txt>
-                </View>
-              )}
-            </Pressable>
-          ) : (
-            <Pressable style={styles.receiptBtn} onPress={onAttach}>
-              <Text style={styles.receiptEmoji}>📷</Text>
-              <Txt typography="t5" fontWeight="medium" color={colors.textSecondary}>영수증 첨부하기</Txt>
-            </Pressable>
-          )}
-        </View>
-
-        {/* 이 거래로 더치페이 (v2) */}
-        <Pressable style={styles.dutch}>
-          <Txt typography="t5" fontWeight="medium" color={colors.textSecondary}>이 거래로 더치페이</Txt>
-        </Pressable>
-
         {/* 저장 */}
         <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSave} disabled={!canSave}>
           <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
@@ -228,7 +224,6 @@ const styles = StyleSheet.create({
   receiptPreview: { borderRadius: radius.button, overflow: 'hidden', backgroundColor: colors.grey100 },
   receiptImg: { width: '100%', height: 220 },
   ocrOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: spacing.sm, backgroundColor: 'rgba(0,0,0,0.45)' },
-  dutch: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider },
   save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand },
   saveOff: { backgroundColor: colors.grey300 },
   delete: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.expenseTint },
