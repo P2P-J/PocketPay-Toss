@@ -9,7 +9,7 @@ import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
 import { MemberInfoSheet } from '../components/team/MemberInfoSheet';
 import { InviteSheet } from '../components/team/InviteSheet';
-import { Avatar } from '../components/common/Avatar';
+import { MemberRow } from '../components/common/MemberRow';
 import { KeyboardScreen } from '../components/common/KeyboardScreen';
 import { useTeamStore } from '../store/teamStore';
 import { useIsOwner } from '../hooks/useIsOwner';
@@ -92,13 +92,12 @@ function MembersPage() {
             const name = getMemberName(m, team?.displayMode);
             const isOwnerMember = m.role === 'owner';
             return (
-              <Pressable key={getMemberId(m) || i} style={styles.row} onLongPress={() => onLongPress(m, i)} delayLongPress={350}>
-                <Avatar name={name} index={i} />
-                <Txt typography="t5" fontWeight="medium" color={colors.textPrimary} numberOfLines={1} style={styles.name}>{name}</Txt>
-                <View style={styles.spacer} />
-                <View style={[styles.badge, isOwnerMember && styles.badgeOwner]}>
-                  <Txt typography="t7" fontWeight="bold" color={isOwnerMember ? colors.brand : colors.textCaption}>{isOwnerMember ? '방장' : '멤버'}</Txt>
-                </View>
+              <Pressable key={getMemberId(m) || i} onLongPress={() => onLongPress(m, i)} delayLongPress={350}>
+                <MemberRow name={name} index={i} trailing={
+                  <View style={[styles.badge, isOwnerMember && styles.badgeOwner]}>
+                    <Txt typography="t7" fontWeight="bold" color={isOwnerMember ? colors.brand : colors.textCaption}>{isOwnerMember ? '방장' : '멤버'}</Txt>
+                  </View>
+                } />
               </Pressable>
             );
           })}
@@ -135,9 +134,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.md },
   list: { gap: spacing.lg },
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  name: { flexShrink: 1 },
-  spacer: { flex: 1 },
   badge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.pill, backgroundColor: colors.grey100 },
   badgeOwner: { backgroundColor: colors.brandTint },
   inviteSection: { marginTop: spacing.lg, gap: spacing.sm },

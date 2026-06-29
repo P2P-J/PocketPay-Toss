@@ -4,23 +4,12 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { formatWon, formatSigned } from '../../lib/format';
-import { Avatar } from '../common/Avatar';
+import { MemberRow } from '../common/MemberRow';
 import { PREVIEW_MODE } from '../../constants/config';
 import { useTeamStore } from '../../store/teamStore';
 import { getTeamId } from '../../types/team';
 import { dutchApi } from '../../api/dutch';
-import type { AnalysisData, MemberShare } from '../../types/analysis';
-
-function MemberRow({ member, index, share }: { member: MemberShare; index: number; share: number }) {
-  return (
-    <View style={styles.row}>
-      <Avatar name={member.name} index={index} />
-      <Txt typography="t5" fontWeight="medium" color={colors.textPrimary} numberOfLines={1} style={styles.name}>{member.name}</Txt>
-      <View style={styles.spacer} />
-      <Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>{formatWon(share)}</Txt>
-    </View>
-  );
-}
+import type { AnalysisData } from '../../types/analysis';
 
 export function MemberTab({ data }: { data: AnalysisData }) {
   const { split } = data;
@@ -88,7 +77,9 @@ export function MemberTab({ data }: { data: AnalysisData }) {
 
       {/* 멤버별 분담액 */}
       <View style={styles.rows}>
-        {split.members.map((m, i) => <MemberRow key={m.userId || i} member={m} index={i} share={split.perPerson} />)}
+        {split.members.map((m, i) => (
+          <MemberRow key={m.userId || i} name={m.name} index={i} trailing={<Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>{formatWon(split.perPerson)}</Txt>} />
+        ))}
       </View>
 
       {/* 정산 요청 — 멤버에게 부담액·계좌 안내 발송 (송금 아님) */}
@@ -106,9 +97,6 @@ const styles = StyleSheet.create({
   col: { flex: 1, gap: spacing.xs },
   colRight: { alignItems: 'flex-end' },
   rows: { gap: spacing.lg },
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  name: { flexShrink: 1 },
-  spacer: { flex: 1 },
   cta: { height: 52, borderRadius: radius.button, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginTop: spacing.sm },
   ctaOff: { opacity: 0.6 },
   note: { textAlign: 'center' },

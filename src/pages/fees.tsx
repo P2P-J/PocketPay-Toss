@@ -10,7 +10,7 @@ import { shiftMonth } from '../lib/date';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { CenterNotice } from '../components/common/CenterNotice';
 import { MonthNav } from '../components/common/MonthNav';
-import { Avatar } from '../components/common/Avatar';
+import { MemberRow } from '../components/common/MemberRow';
 import { useTeamStore } from '../store/teamStore';
 import { useIsOwner } from '../hooks/useIsOwner';
 import { getMemberId, getMemberName, getTeamId } from '../types/team';
@@ -110,13 +110,12 @@ function FeesPage() {
         <View style={styles.list}>
           {status.members.map((m, i) => {
             return (
-              <Pressable key={m.userId || i} style={[styles.row, busy[m.userId] && styles.rowBusy]} disabled={!isOwner || busy[m.userId]} onPress={() => toggle(m.userId, m.paid, m.paymentId)}>
-                <Avatar name={m.name} index={i} />
-                <Txt typography="t5" fontWeight="medium" color={colors.textPrimary} numberOfLines={1} style={styles.name}>{m.name}</Txt>
-                <View style={styles.spacer} />
-                <View style={[styles.badge, m.paid ? styles.paid : styles.unpaid]}>
-                  <Txt typography="t7" fontWeight="bold" color={m.paid ? colors.brandStrong : colors.textCaption}>{m.paid ? '납부' : '미납'}</Txt>
-                </View>
+              <Pressable key={m.userId || i} style={busy[m.userId] && styles.rowBusy} disabled={!isOwner || busy[m.userId]} onPress={() => toggle(m.userId, m.paid, m.paymentId)}>
+                <MemberRow name={m.name} index={i} trailing={
+                  <View style={[styles.badge, m.paid ? styles.paid : styles.unpaid]}>
+                    <Txt typography="t7" fontWeight="bold" color={m.paid ? colors.brandStrong : colors.textCaption}>{m.paid ? '납부' : '미납'}</Txt>
+                  </View>
+                } />
               </Pressable>
             );
           })}
@@ -132,10 +131,7 @@ const styles = StyleSheet.create({
   card: { backgroundColor: colors.cardBg, borderRadius: radius.card, padding: spacing.cardPadding, gap: spacing.sm },
   cardRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   list: { gap: spacing.lg, marginTop: spacing.xs },
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   rowBusy: { opacity: 0.5 },
-  name: { flexShrink: 1 },
-  spacer: { flex: 1 },
   badge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.pill },
   paid: { backgroundColor: colors.brandTint },
   unpaid: { backgroundColor: colors.grey100 },
