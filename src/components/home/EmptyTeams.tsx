@@ -1,6 +1,6 @@
 import { useNavigation } from '@granite-js/react-native';
-import React, { useState } from 'react';
-import { View, Pressable, Alert, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Animated, Easing, Pressable, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
@@ -17,6 +17,22 @@ export function EmptyTeams() {
   const setCurrentTeam = useTeamStore((s) => s.setCurrentTeam);
   const [joinOpen, setJoinOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  // 은은하게 떠다니는 배경
+  const drift = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(drift, { toValue: 1, duration: 6000, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(drift, { toValue: 0, duration: 6000, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [drift]);
+  const up = drift.interpolate({ inputRange: [0, 1], outputRange: [0, -22] });
+  const down = drift.interpolate({ inputRange: [0, 1], outputRange: [0, 22] });
+  const float = drift.interpolate({ inputRange: [0, 1], outputRange: [0, -10] });
 
   const onJoin = async (code: string) => {
     if (PREVIEW_MODE) {
@@ -41,9 +57,18 @@ export function EmptyTeams() {
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.badge}><Sparkle size={40} /></View>
-      <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>아직 모임이 없어요</Txt>
-      <Txt typography="t5" color={colors.textCaption} style={styles.sub}>첫 모임을 만들거나{'\n'}초대 코드로 참가해보세요</Txt>
+      {/* 움직이는 파스텔 배경 */}
+      <Animated.View pointerEvents="none" style={[styles.blob, styles.blobGreen, { transform: [{ translateY: up }] }]} />
+      <Animated.View pointerEvents="none" style={[styles.blob, styles.blobBlue, { transform: [{ translateY: down }] }]} />
+      <Animated.View pointerEvents="none" style={[styles.blob, styles.blobPink, { transform: [{ translateY: up }] }]} />
+
+      <View style={styles.hero}>
+        <Animated.View style={[styles.badge, { transform: [{ translateY: float }] }]}>
+          <Sparkle size={40} />
+        </Animated.View>
+        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary}>작은 모임</Txt>
+        <Txt typography="t6" color={colors.textCaption} style={styles.sub}>아직 참여 중인 모임이 없어요{'\n'}첫 모임을 만들거나 초대 코드로 참가해보세요</Txt>
+      </View>
 
       <View style={styles.actions}>
         <Pressable style={styles.primary} onPress={() => navigation.navigate('/team-new' as '/')}>
@@ -60,10 +85,15 @@ export function EmptyTeams() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.screenX, gap: spacing.sm },
-  badge: { width: 72, height: 72, borderRadius: 24, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
-  sub: { textAlign: 'center', lineHeight: 22, marginBottom: spacing.xl },
-  actions: { alignSelf: 'stretch', gap: spacing.sm },
+  wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.screenX, overflow: 'hidden' },
+  blob: { position: 'absolute', width: 300, height: 300, borderRadius: 150, opacity: 0.45 },
+  blobGreen: { backgroundColor: colors.brandTint, top: -40, left: -90 },
+  blobBlue: { backgroundColor: '#EAF2FE', top: 120, right: -110 },
+  blobPink: { backgroundColor: '#FFF0F0', bottom: -30, left: -70 },
+  hero: { alignItems: 'center', gap: spacing.sm },
+  badge: { width: 80, height: 80, borderRadius: 26, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md, shadowColor: colors.brand, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
+  sub: { textAlign: 'center', lineHeight: 22, marginTop: spacing.xs },
+  actions: { alignSelf: 'stretch', gap: spacing.sm, marginTop: spacing.section },
   primary: { height: 54, borderRadius: radius.button, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
   secondary: { height: 54, borderRadius: radius.button, backgroundColor: colors.grey100, alignItems: 'center', justifyContent: 'center' },
 });

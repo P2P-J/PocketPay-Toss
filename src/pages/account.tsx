@@ -1,11 +1,12 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import React, { useState } from 'react';
-import { ScrollView, View, Pressable, StyleSheet } from 'react-native';
+import { ScrollView, Pressable, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
+import { KeyboardScreen } from '../components/common/KeyboardScreen';
 import { PREVIEW_MODE } from '../constants/config';
 import { useAccountStore, selectAccount } from '../store/accountStore';
 import { useTeamStore } from '../store/teamStore';
@@ -53,7 +54,7 @@ function AccountPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardScreen style={styles.container}>
       <DetailHeader title="연결 계좌" />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Txt typography="t7" color={colors.textCaption}>모임 정산에 사용할 계좌예요</Txt>
@@ -64,7 +65,7 @@ function AccountPage() {
           <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
         </Pressable>
       </ScrollView>
-    </View>
+    </KeyboardScreen>
   );
 }
 

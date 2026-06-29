@@ -1,3 +1,6 @@
+// 샘플(로컬) 분기 테스트 — device-test용 PREVIEW_MODE 토글과 무관하게 USE_SAMPLE=true 고정
+jest.mock('../constants/config', () => ({ PREVIEW_MODE: true, API_BASE_URL: 'http://test', REQUEST_TIMEOUT: 30000 }));
+
 import { useTeamStore } from './teamStore';
 import { getMemberId, type Team } from '../types/team';
 

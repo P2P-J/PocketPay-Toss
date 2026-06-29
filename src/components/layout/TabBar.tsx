@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, Alert, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing } from '../../constants/spacing';
+import { useTeamStore } from '../../store/teamStore';
 
 type TabKey = 'home' | 'transactions' | 'analysis' | 'more';
 
@@ -24,6 +25,14 @@ export function TabBar({
   onAdd: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  const currentTeam = useTeamStore((s) => s.currentTeam);
+  const handleAdd = () => {
+    if (!currentTeam) {
+      Alert.alert('모임이 필요해요', '거래를 추가하려면 먼저 모임을 만들어주세요.');
+      return;
+    }
+    onAdd();
+  };
   const tab = (t: (typeof TABS)[number]) => {
     const on = active === t.key;
     const tint = on ? colors.brand : colors.textTertiary;
@@ -42,7 +51,7 @@ export function TabBar({
       {TABS.slice(0, 2).map(tab)}
       <View style={styles.centerSlot} />
       {TABS.slice(2).map(tab)}
-      <Pressable testID="tab-fab" style={styles.fab} onPress={onAdd}>
+      <Pressable testID="tab-fab" style={styles.fab} onPress={handleAdd}>
         <Icon name="icon-plus-mono" size={26} color={colors.white} />
       </Pressable>
     </View>

@@ -257,11 +257,11 @@ export const useTeamStore = create<TeamState>((set, get) => {
     try {
       const res = await teamApi.create(input); // 생성자 owner는 백엔드가 처리
       const teamsRes = await teamApi.getMyTeams();
-      set({ teams: teamsRes.data || [] });
-      if (res.data) await get().setCurrentTeam(getTeamId(res.data));
-      else set({ loading: false });
+      // 새 모임은 거래가 없으니 곧장 현재 모임으로 설정(빈 통계). summary/deals 추가 호출이 실패해도 막힘 없음.
+      set({ teams: teamsRes.data || [], currentTeam: res.data, ...statePatch([]), loading: false, error: null });
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임 생성에 실패했어요.' });
+      throw e; // team-new에서 처리(실패 시 화면 유지+안내)
     }
   },
 

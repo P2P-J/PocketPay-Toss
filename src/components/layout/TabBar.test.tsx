@@ -17,6 +17,11 @@ jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
+// 거래추가(+)는 현재 모임이 있을 때만 동작 — 테스트는 모임 있는 상태로 모킹.
+jest.mock('../../store/teamStore', () => ({
+  useTeamStore: (selector: (s: { currentTeam: unknown }) => unknown) => selector({ currentTeam: { _id: 't1', name: 'T' } }),
+}));
+
 it('renders 4 tab labels', () => {
   const { getByText } = render(<TabBar active="home" onNavigate={() => {}} onAdd={() => {}} />);
   expect(getByText('홈')).toBeTruthy();

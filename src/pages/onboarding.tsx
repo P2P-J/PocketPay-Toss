@@ -5,6 +5,7 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
 import { FormField } from '../components/common/FormField';
+import { KeyboardScreen } from '../components/common/KeyboardScreen';
 import { useAuthStore } from '../store/authStore';
 import { isValidHandle } from '../lib/validation';
 import { accountApi } from '../api/account';
@@ -67,7 +68,7 @@ function OnboardingPage() {
   const handleError = check.state === 'taken' || check.state === 'invalid' ? check.msg : undefined;
 
   return (
-    <View style={styles.container}>
+    <KeyboardScreen style={styles.container}>
       <View style={styles.header}>
         <Txt typography="t4" fontWeight="bold" color={colors.textPrimary}>프로필 설정</Txt>
       </View>
@@ -82,7 +83,7 @@ function OnboardingPage() {
           <Txt typography="t4" fontWeight="bold" color={colors.white}>{saving ? '저장 중…' : '시작하기'}</Txt>
         </Pressable>
       </View>
-    </View>
+    </KeyboardScreen>
   );
 }
 

@@ -8,6 +8,7 @@ import { formatAmountInput, parseAmount } from '../lib/format';
 import { getCategoryLabel, getCategoryEmoji } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DetailHeader } from '../components/layout/DetailHeader';
+import { KeyboardScreen } from '../components/common/KeyboardScreen';
 import { useBudgetStore, selectBudget, type BudgetLimit } from '../store/budgetStore';
 import { useCurrentTeamId } from '../hooks/useCurrentTeamId';
 
@@ -36,7 +37,7 @@ function BudgetSettingsPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardScreen style={styles.container}>
       <DetailHeader title="예산 설정" />
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
@@ -95,7 +96,7 @@ function BudgetSettingsPage() {
           <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
         </Pressable>
       </ScrollView>
-    </View>
+    </KeyboardScreen>
   );
 }
 

@@ -13,6 +13,7 @@ import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DatePickerSheet } from '../components/deal/DatePickerSheet';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
+import { KeyboardScreen } from '../components/common/KeyboardScreen';
 import { useTeamStore } from '../store/teamStore';
 
 export const Route = createRoute('/deal-new', { component: DealNewPage });
@@ -115,7 +116,7 @@ function DealNewPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardScreen style={styles.container}>
       <DetailHeader title={editing ? '거래 수정' : '거래 등록'} />
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
@@ -204,7 +205,7 @@ function DealNewPage() {
       </ScrollView>
 
       <DatePickerSheet visible={datePicker} value={date} onSelect={setDate} onClose={() => setDatePicker(false)} />
-    </View>
+    </KeyboardScreen>
   );
 }
 

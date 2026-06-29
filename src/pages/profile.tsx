@@ -7,6 +7,7 @@ import { spacing, radius } from '../constants/spacing';
 import { PREVIEW_MODE } from '../constants/config';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
+import { KeyboardScreen } from '../components/common/KeyboardScreen';
 import { Avatar } from '../components/common/Avatar';
 import { useProfileStore } from '../store/profileStore';
 import { useAuthStore } from '../store/authStore';
@@ -88,7 +89,7 @@ function ProfilePage() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardScreen style={styles.container}>
       <DetailHeader title="프로필" />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <View style={styles.avatarWrap}>
@@ -122,7 +123,7 @@ function ProfilePage() {
           </Pressable>
         </View>
       </ScrollView>
-    </View>
+    </KeyboardScreen>
   );
 }
 
