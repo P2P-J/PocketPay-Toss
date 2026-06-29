@@ -3,7 +3,7 @@ export const API_BASE_URL = 'https://pocketpay-backend-production.up.railway.app
 
 export const REQUEST_TIMEOUT = 30000;
 
-// ⚠️ 디자인 프리뷰 모드 — true면 더미 데이터 + 로그인 우회(PC/더미 확인용).
-//   __DEV__로 묶여 프로덕션 빌드에선 항상 false(실연동).
-//   실기기에서 실연동 테스트하려면 아래 true → false 한 곳만 바꾸면 됨.
-export const PREVIEW_MODE = __DEV__ && false; // ⚠️ 실연동 테스트 중 — 끝나면 true로 원복
+// 더미(디자인 프리뷰) 모드. 출시는 실연동이어야 하므로 false 고정.
+//   PC/샌드박스에서 더미 데이터로 빠르게 보고 싶을 때만 `__DEV__`로 바꿔 쓰면 됨
+//   (프로덕션 빌드는 __DEV__가 false라 어차피 실연동).
+export const PREVIEW_MODE = false;
