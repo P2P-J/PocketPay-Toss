@@ -8,6 +8,7 @@ import { PREVIEW_MODE } from '../constants/config';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
 import { MemberInfoSheet } from '../components/team/MemberInfoSheet';
+import { InviteSheet } from '../components/team/InviteSheet';
 import { Avatar } from '../components/common/Avatar';
 import { useTeamStore } from '../store/teamStore';
 import { useIsOwner } from '../hooks/useIsOwner';
@@ -27,6 +28,7 @@ function MembersPage() {
 
   const [handle, setHandle] = useState('');
   const [inviting, setInviting] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [infoTarget, setInfoTarget] = useState<{ member: Member; index: number } | null>(null);
   const handleValid = isValidHandle(handle);
 
@@ -107,9 +109,16 @@ function MembersPage() {
             <Pressable style={[styles.invite, (!handleValid || inviting) && styles.inviteOff]} onPress={onInvite} disabled={!handleValid || inviting}>
               <Txt typography="t5" fontWeight="bold" color={handleValid ? colors.brand : colors.textTertiary}>+ 초대하기</Txt>
             </Pressable>
+            <Pressable style={styles.codeInvite} onPress={() => setInviteOpen(true)}>
+              <Txt typography="t5" fontWeight="bold" color={colors.textSecondary}>초대 코드 · QR로 초대</Txt>
+            </Pressable>
           </View>
         )}
       </ScrollView>
+
+      {team && (
+        <InviteSheet visible={inviteOpen} onClose={() => setInviteOpen(false)} teamId={getTeamId(team)} teamName={team.name} />
+      )}
 
       <MemberInfoSheet
         member={infoTarget?.member ?? null}
@@ -133,4 +142,5 @@ const styles = StyleSheet.create({
   inviteSection: { marginTop: spacing.lg, gap: spacing.sm },
   invite: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider, borderStyle: 'dashed' },
   inviteOff: { opacity: 0.6 },
+  codeInvite: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.grey100 },
 });
