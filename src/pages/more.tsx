@@ -12,6 +12,7 @@ import { spacing } from '../constants/spacing';
 import { PageHeader } from '../components/layout/PageHeader';
 import { TeamSummaryCard } from '../components/more/TeamSummaryCard';
 import { MenuSection } from '../components/more/MenuList';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { TabBar } from '../components/layout/TabBar';
 
 export const Route = createRoute('/more', { component: MorePage });
@@ -49,18 +50,28 @@ function MorePage() {
       <View style={styles.body}>
         <PageHeader title="더보기" />
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          <TeamSummaryCard team={currentTeam} />
+          {currentTeam ? (
+            <>
+              <TeamSummaryCard team={currentTeam} />
+              <MenuSection title="모임 관리" items={manageItems} />
+              <MenuSection
+                title="계좌 · 알림"
+                items={[
+                  { emoji: '🏦', label: '연결 계좌', value: accountBank || '미설정', path: '/account' },
+                  { emoji: '🔔', label: '알림 설정', path: '/notifications' },
+                ]}
+              />
+            </>
+          ) : (
+            <View style={styles.noTeam}>
+              <Txt typography="t5" fontWeight="bold" color={colors.textPrimary}>아직 모임이 없어요</Txt>
+              <Txt typography="t7" color={colors.textCaption} style={styles.noTeamSub}>모임을 만들면 멤버·회비·정산을 관리할 수 있어요</Txt>
+              <PrimaryButton label="모임 만들기" onPress={() => nav.navigate('/team-new' as '/')} style={styles.noTeamBtn} />
+            </View>
+          )}
           <MenuSection
             title="내 계정"
             items={[{ emoji: '🙂', label: '프로필', path: '/profile' }]}
-          />
-          <MenuSection title="모임 관리" items={manageItems} />
-          <MenuSection
-            title="계좌 · 알림"
-            items={[
-              { emoji: '🏦', label: '연결 계좌', value: accountBank || '미설정', path: '/account' },
-              { emoji: '🔔', label: '알림 설정', path: '/notifications' },
-            ]}
           />
           <MenuSection
             title="지원"
@@ -85,5 +96,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   body: { flex: 1, paddingHorizontal: spacing.screenX },
   scroll: { paddingBottom: spacing.section, gap: spacing.section },
+  noTeam: { backgroundColor: colors.cardBg, borderRadius: 16, padding: spacing.cardPadding, alignItems: 'center', gap: spacing.xs },
+  noTeamSub: { textAlign: 'center', marginBottom: spacing.sm },
+  noTeamBtn: { alignSelf: 'stretch' },
   leave: { alignItems: 'center', paddingVertical: spacing.md },
 });

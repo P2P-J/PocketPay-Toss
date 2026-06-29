@@ -259,9 +259,13 @@ export const useTeamStore = create<TeamState>((set, get) => {
     set({ loading: true, error: null });
     try {
       const res = await teamApi.create(input); // 생성자 owner는 백엔드가 처리
-      const teamsRes = await teamApi.getMyTeams();
-      // 새 모임은 거래가 없으니 곧장 현재 모임으로 설정(빈 통계). summary/deals 추가 호출이 실패해도 막힘 없음.
-      set({ teams: teamsRes.data || [], currentTeam: res.data, ...statePatch([]), loading: false, error: null });
+      const created = res.data;
+      // 목록 재조회가 실패하거나 DB 반영 지연으로 방금 만든 모임이 빠질 수 있어, 생성 모임을 반드시 포함
+      const listRes = await teamApi.getMyTeams().catch(() => ({ data: [] as Team[] }));
+      const list = listRes.data || [];
+      const teams = list.some((t) => getTeamId(t) === getTeamId(created)) ? list : [created, ...list];
+      // 새 모임은 거래가 없으니 곧장 현재 모임으로(빈 통계). summary/deals 추가 호출 실패해도 막힘 없음.
+      set({ teams, currentTeam: created, ...statePatch([]), loading: false, error: null });
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임 생성에 실패했어요.' });
       throw e; // team-new에서 처리(실패 시 화면 유지+안내)

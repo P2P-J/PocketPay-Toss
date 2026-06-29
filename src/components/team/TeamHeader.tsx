@@ -22,9 +22,9 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
   const unread = useAlertsStore(selectUnreadCount);
   return (
     <View style={styles.header}>
-      <Pressable style={styles.left} onPress={() => setTeamSheet(true)}>
-        <Txt typography="t3" fontWeight="bold" color={colors.textPrimary} numberOfLines={1} style={styles.teamName}>{currentTeam?.name ?? '작은 모임'}</Txt>
-        <Icon name="icon-arrow-down-mono" size={20} color={colors.textSecondary} />
+      <Pressable style={styles.left} onPress={() => currentTeam && setTeamSheet(true)} disabled={!currentTeam}>
+        <Txt typography="t3" fontWeight="bold" color={currentTeam ? colors.textPrimary : colors.textTertiary} numberOfLines={1} style={styles.teamName}>{currentTeam?.name ?? '작은 모임'}</Txt>
+        {currentTeam && <Icon name="icon-arrow-down-mono" size={20} color={colors.textSecondary} />}
       </Pressable>
       <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('/alerts' as '/')}>
         <Icon name="icon-alarm-mono" size={22} color={colors.textSecondary} />
@@ -34,9 +34,11 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
           </View>
         )}
       </Pressable>
-      <Pressable style={styles.members} onPress={() => setMemberSheet(true)}>
-        <Icon name="icon-user-two-mono" size={20} color={colors.textSecondary} />
-      </Pressable>
+      {currentTeam && (
+        <Pressable style={styles.members} onPress={() => setMemberSheet(true)}>
+          <Icon name="icon-user-two-mono" size={20} color={colors.textSecondary} />
+        </Pressable>
+      )}
       <TeamSelectSheet
         visible={teamSheet}
         teams={teams}
