@@ -10,6 +10,7 @@ import { FormField } from '../components/common/FormField';
 import { MemberInfoSheet } from '../components/team/MemberInfoSheet';
 import { InviteSheet } from '../components/team/InviteSheet';
 import { Avatar } from '../components/common/Avatar';
+import { KeyboardScreen } from '../components/common/KeyboardScreen';
 import { useTeamStore } from '../store/teamStore';
 import { useIsOwner } from '../hooks/useIsOwner';
 import { getMemberId, getMemberName, getTeamId, type Member } from '../types/team';
@@ -82,7 +83,7 @@ function MembersPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardScreen style={styles.container}>
       <DetailHeader title="멤버 관리" />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Txt typography="t7" color={colors.textCaption}>멤버 {members.length}명 · 길게 눌러 정보 보기{isOwner ? '·관리' : ''}</Txt>
@@ -126,7 +127,7 @@ function MembersPage() {
         displayMode={team?.displayMode}
         onClose={() => setInfoTarget(null)}
       />
-    </View>
+    </KeyboardScreen>
   );
 }
 

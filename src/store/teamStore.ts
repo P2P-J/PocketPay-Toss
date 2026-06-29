@@ -191,17 +191,20 @@ export const useTeamStore = create<TeamState>((set, get) => {
       const now = new Date();
       const year = now.getFullYear();
       const month = now.getMonth() + 1;
-      const [teamRes, summaryRes, statsRes, dealsRes] = await Promise.all([
+      // 4개 독립 read — 일부 실패해도 팀만 불러오면 화면은 유지(부분 실패가 전체를 깨지 않게)
+      const [teamRes, summaryRes, statsRes, dealsRes] = await Promise.allSettled([
         teamApi.getTeam(teamId),
         dealApi.getSummary(teamId),
         dealApi.getMonthlyStats(teamId, year, month),
         dealApi.getMonthly(teamId, year, month),
       ]);
+      if (teamRes.status === 'rejected') throw teamRes.reason; // 팀 자체를 못 불러오면 에러
+      const prev = get();
       set({
-        currentTeam: teamRes.data,
-        summary: summaryRes.data,
-        stats: statsRes.data,
-        transactions: (dealsRes.data || []).map(dealToTransaction),
+        currentTeam: teamRes.value.data,
+        summary: summaryRes.status === 'fulfilled' ? summaryRes.value.data : prev.summary,
+        stats: statsRes.status === 'fulfilled' ? statsRes.value.data : prev.stats,
+        transactions: dealsRes.status === 'fulfilled' ? (dealsRes.value.data || []).map(dealToTransaction) : prev.transactions,
         loading: false,
       });
     } catch (e) {

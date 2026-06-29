@@ -6,13 +6,13 @@ export const accountApi = {
   updateProfile: (payload: { name?: string; nickname?: string }) =>
     apiClient.patch('/account/profile', payload) as Promise<{ data: User }>,
 
-  // handle 변경 (24시간 쿨다운, 서버 검증)
+  // handle 변경 (30일 쿨다운, 서버 검증)
   updateHandle: (handle: string) =>
     apiClient.patch('/account/handle', { handle }) as Promise<{ data: User }>,
 
-  // handle 사용 가능 여부
+  // handle 사용 가능 여부 (백엔드: GET /account/check-handle?handle= , 응답 {data:{available,reason}})
   checkHandle: (value: string) =>
-    apiClient.get(`/account/check-handle?value=${encodeURIComponent(value)}`) as Promise<{ available: boolean; reason?: string }>,
+    apiClient.get(`/account/check-handle?handle=${encodeURIComponent(value)}`) as Promise<{ data: { available: boolean; reason?: string } }>,
 
   // 회원 탈퇴 (방장인 모임 + 데이터 삭제)
   deleteAccount: () => apiClient.delete('/account/me') as Promise<null>,

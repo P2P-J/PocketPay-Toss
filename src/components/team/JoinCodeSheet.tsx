@@ -3,6 +3,7 @@ import { Modal, View, TextInput, Pressable, KeyboardAvoidingView, Platform, Styl
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
+import { isValidInviteCode } from '../../lib/validation';
 
 export function JoinCodeSheet({ visible, onClose, onSubmit, submitting }: {
   visible: boolean;
@@ -13,7 +14,7 @@ export function JoinCodeSheet({ visible, onClose, onSubmit, submitting }: {
   const [code, setCode] = useState('');
   useEffect(() => { if (visible) setCode(''); }, [visible]);
   const trimmed = code.trim();
-  const canSubmit = trimmed.length > 0 && !submitting;
+  const canSubmit = isValidInviteCode(trimmed) && !submitting;
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -31,6 +32,7 @@ export function JoinCodeSheet({ visible, onClose, onSubmit, submitting }: {
           placeholderTextColor={colors.textTertiary}
           autoCapitalize="none"
           autoCorrect={false}
+          maxLength={64}
         />
         <Pressable style={[styles.submit, !canSubmit && styles.submitOff]} onPress={() => onSubmit(trimmed)} disabled={!canSubmit}>
           <Txt typography="t4" fontWeight="bold" color={colors.white}>{submitting ? '참가 중…' : '참가하기'}</Txt>

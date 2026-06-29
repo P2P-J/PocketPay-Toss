@@ -25,10 +25,6 @@ export function FilterChips({ value, onChange }: { value: TxFilter; onChange: (v
           </Pressable>
         );
       })}
-      {/* 카테고리 필터는 추후 — 현재는 시각용 칩 */}
-      <View style={styles.chip}>
-        <Txt typography="t6" fontWeight="medium" color={colors.textTertiary}>카테고리</Txt>
-      </View>
     </View>
   );
 }

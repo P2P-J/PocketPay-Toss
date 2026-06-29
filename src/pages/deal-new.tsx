@@ -49,6 +49,8 @@ function DealNewPage() {
     try {
       if (editing) await updateTransaction(editing.id, payload);
       else await addTransaction(payload);
+      const err = useTeamStore.getState().error;
+      if (err) { Alert.alert('저장 실패', err); return; } // 실패 시 화면 유지
       navigation.goBack();
     } finally {
       setSaving(false);

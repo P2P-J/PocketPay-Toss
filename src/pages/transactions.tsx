@@ -1,6 +1,6 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import React, { useState, useMemo } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTeamStore } from '../store/teamStore';
 import { colors } from '../constants/colors';
 import { spacing } from '../constants/spacing';
@@ -19,6 +19,7 @@ function TransactionsPage() {
   const nav = useNavigation();
   const transactions = useTeamStore((s) => s.transactions);
   const error = useTeamStore((s) => s.error);
+  const loading = useTeamStore((s) => s.loading);
   const { onEdit, onDelete } = useTransactionActions();
   const [filter, setFilter] = useState<TxFilter>('all');
   const [query, setQuery] = useState('');
@@ -37,6 +38,8 @@ function TransactionsPage() {
         <PageHeader title="거래" />
         {error ? (
           <CenterNotice message={error} tone="error" />
+        ) : loading && transactions.length === 0 ? (
+          <View style={styles.center}><ActivityIndicator color={colors.brand} /></View>
         ) : (
           <>
             <SearchBar value={query} onChangeText={setQuery} />
@@ -58,5 +61,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   body: { flex: 1, paddingHorizontal: spacing.screenX },
   chips: { marginTop: spacing.md },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { paddingBottom: spacing.section },
 });

@@ -22,15 +22,15 @@ export const teamApi = {
   generateInviteToken: (teamId: string) =>
     apiClient.post(`/teams/${teamId}/invite-token`) as Promise<{ data: { token: string; expiry: string } }>,
 
-  // 초대 토큰으로 참가
+  // 초대 토큰으로 참가 (토큰은 외부 입력 — 경로 주입 방지 위해 인코딩)
   joinByToken: (token: string) =>
-    apiClient.post(`/teams/join/${token}`) as Promise<{ data: { alreadyMember: boolean; team: Team } }>,
+    apiClient.post(`/teams/join/${encodeURIComponent(token)}`) as Promise<{ data: { alreadyMember: boolean; team: Team } }>,
 
   // 모임 나가기(멤버) — 방장은 위임 후 가능
   leaveTeam: (teamId: string) =>
     apiClient.delete(`/teams/${teamId}/members/me`) as Promise<null>,
 
-  // ⚠️ 백엔드 엔드포인트 추가 예정(권한 위임). 더미는 로컬 처리, 실모드는 이 경로 구현 필요.
+  // 권한 위임 (백엔드 PATCH /teams/:id/owner 배포됨)
   transferOwner: (teamId: string, userId: string) =>
     apiClient.patch(`/teams/${teamId}/owner`, { userId }) as Promise<{ data: Team }>,
 };

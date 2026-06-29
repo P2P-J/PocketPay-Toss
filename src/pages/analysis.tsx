@@ -1,6 +1,6 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import React, { useState, useMemo } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Tab } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing } from '../constants/spacing';
@@ -37,6 +37,7 @@ function AnalysisPage() {
   const [tab, setTab] = useState<TabValue>('summary');
   const transactions = useTeamStore((s) => s.transactions);
   const error = useTeamStore((s) => s.error);
+  const loading = useTeamStore((s) => s.loading);
   const currentTeam = useTeamStore((s) => s.currentTeam);
   const teamId = currentTeam ? getTeamId(currentTeam) : '';
   const budgetConfig = useBudgetStore(selectBudget(teamId));
@@ -55,6 +56,8 @@ function AnalysisPage() {
         <PageHeader title="분석" />
         {error ? (
           <CenterNotice message={error} tone="error" />
+        ) : loading && transactions.length === 0 ? (
+          <View style={styles.center}><ActivityIndicator color={colors.brand} /></View>
         ) : (
           <>
             {/* 월 선택 — 모든 탭에 공통 적용 */}
@@ -82,5 +85,6 @@ function AnalysisPage() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   body: { flex: 1, paddingHorizontal: spacing.screenX },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { paddingBottom: spacing.section, paddingTop: spacing.lg },
 });

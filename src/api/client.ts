@@ -53,7 +53,8 @@ const tryRefreshToken = async (): Promise<string | null> => {
   const refreshToken = getAuthState?.()?.refreshToken;
   if (!refreshToken) return null;
 
-  refreshPromise = fetch(`${API_BASE_URL}/auth/refresh`, {
+  // fetchWithTimeout으로 감싸 refresh가 무한 대기(네트워크 행)되지 않게 — 실패 시 null→로그아웃 경로
+  refreshPromise = fetchWithTimeout(`${API_BASE_URL}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),

@@ -1,6 +1,6 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import React, { useState } from 'react';
-import { ScrollView, Pressable, StyleSheet } from 'react-native';
+import { ScrollView, Pressable, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
 import { spacing, radius } from '../constants/spacing';
@@ -48,6 +48,8 @@ function AccountPage() {
         await setCurrentTeam(teamId);
       }
       navigation.goBack();
+    } catch (e) {
+      Alert.alert('저장 실패', e instanceof Error ? e.message : '다시 시도해주세요.'); // 실패 시 화면 유지
     } finally {
       setSaving(false);
     }

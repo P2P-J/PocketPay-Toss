@@ -35,8 +35,9 @@ function Home() {
   useEffect(() => { checkAuth(); }, [checkAuth]);
   useEffect(() => { if (accessToken) { fetchTeams(); fetchUnread(); } }, [accessToken, fetchTeams, fetchUnread]);
   useEffect(() => { if (!authLoading && !accessToken) navigation.navigate('/login'); }, [authLoading, accessToken, navigation]);
-  // 신규유저(핸들 없음) → 온보딩 프로필. 프리뷰는 더미라 건너뜀.
-  useEffect(() => { if (!PREVIEW_MODE && accessToken && user && !user.handle) navigation.navigate('/onboarding'); }, [accessToken, user, navigation]);
+  // 신규유저(핸들 없음) → 온보딩 프로필. replace로 뒤로가기 우회 차단. 프리뷰는 더미라 건너뜀.
+  const needsOnboarding = !PREVIEW_MODE && !!accessToken && !!user && !user.handle;
+  useEffect(() => { if (needsOnboarding) navigation.replace('/onboarding'); }, [needsOnboarding, navigation]);
 
   // 딥링크로 보관된 초대 토큰 자동 참가 (로그인+온보딩 완료 후 1회)
   const inviteConsumed = useRef(false);
@@ -56,7 +57,7 @@ function Home() {
     })();
   }, [accessToken, user, fetchTeams, setCurrentTeam]);
 
-  if (!accessToken) return <View style={[styles.container, styles.center]}><ActivityIndicator color={colors.brand} /></View>;
+  if (!accessToken || needsOnboarding) return <View style={[styles.container, styles.center]}><ActivityIndicator color={colors.brand} /></View>;
 
   return (
     <View style={styles.container}>
@@ -66,7 +67,12 @@ function Home() {
         {loading && !currentTeam ? (
           <View style={styles.center}><ActivityIndicator color={colors.brand} /></View>
         ) : error ? (
-          <View style={styles.center}><Txt typography="t5" color={colors.expense}>{error}</Txt></View>
+          <View style={styles.center}>
+            <Txt typography="t5" color={colors.expense} style={styles.errorText}>{error}</Txt>
+            <Pressable style={styles.retry} onPress={() => fetchTeams()}>
+              <Txt typography="t5" fontWeight="bold" color={colors.brand}>다시 시도</Txt>
+            </Pressable>
+          </View>
         ) : teams.length === 0 ? (
           <EmptyTeams />
         ) : (
@@ -93,5 +99,7 @@ const styles = StyleSheet.create({
   body: { flex: 1, paddingHorizontal: spacing.screenX },
   scroll: { gap: spacing.cardGap, paddingBottom: spacing.section },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  errorText: { textAlign: 'center', paddingHorizontal: spacing.section },
+  retry: { marginTop: spacing.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.lg },
   sectionTitle: { marginTop: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 });

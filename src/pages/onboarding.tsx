@@ -34,7 +34,7 @@ function OnboardingPage() {
     const t = setTimeout(async () => {
       try {
         const res = await accountApi.checkHandle(h);
-        setCheck(res.available ? { state: 'ok', msg: '사용 가능한 ID예요' } : { state: 'taken', msg: res.reason || '이미 사용 중인 ID예요' });
+        setCheck(res.data.available ? { state: 'ok', msg: '사용 가능한 ID예요' } : { state: 'taken', msg: res.data.reason || '이미 사용 중인 ID예요' });
       } catch {
         setCheck({ state: 'idle' });
       }
