@@ -30,4 +30,7 @@ export const colors = {
   textTertiary: '#b0b8c1', // grey400 비활성/플레이스홀더
   divider: '#e5e8eb', // grey200
   cardBg: '#f9fafb', // grey50
+
+  // 차트(도넛/카테고리) 팔레트 — 한 곳에서 관리
+  chart: ['#3DD598', '#3182f6', '#FFA94D', '#845EF7', '#f04452', '#20C997'],
 } as const;

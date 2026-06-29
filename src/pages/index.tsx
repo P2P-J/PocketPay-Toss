@@ -28,7 +28,15 @@ function Home() {
   const user = useAuthStore((s) => s.user);
   const checkAuth = useAuthStore((s) => s.checkAuth);
   const authLoading = useAuthStore((s) => s.loading);
-  const { teams, currentTeam, summary, stats, transactions, loading, error, fetchTeams, setCurrentTeam } = useTeamStore();
+  const teams = useTeamStore((s) => s.teams);
+  const currentTeam = useTeamStore((s) => s.currentTeam);
+  const summary = useTeamStore((s) => s.summary);
+  const stats = useTeamStore((s) => s.stats);
+  const transactions = useTeamStore((s) => s.transactions);
+  const loading = useTeamStore((s) => s.loading);
+  const error = useTeamStore((s) => s.error);
+  const fetchTeams = useTeamStore((s) => s.fetchTeams);
+  const setCurrentTeam = useTeamStore((s) => s.setCurrentTeam);
   const { onEdit, onDelete } = useTransactionActions();
   const fetchUnread = useAlertsStore((s) => s.fetchUnread);
 

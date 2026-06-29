@@ -3,10 +3,9 @@ import { Modal, View, Pressable, Text, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
-import { shiftMonth } from '../../lib/date';
+import { shiftMonth, pad } from '../../lib/date';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-const pad = (n: number) => String(n).padStart(2, '0');
 
 interface Props {
   visible: boolean;

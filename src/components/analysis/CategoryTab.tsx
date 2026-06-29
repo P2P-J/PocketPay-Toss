@@ -8,7 +8,7 @@ import { CategoryBar } from './CategoryBar';
 import type { AnalysisData } from '../../types/analysis';
 
 // 슬라이스 색 팔레트 (카테고리 순서대로 배정) — 도넛/막대 공유
-const SLICE_COLORS = [colors.brand, colors.income, '#FFA94D', '#845EF7', colors.expense, '#20C997'];
+const SLICE_COLORS = colors.chart;
 
 export function CategoryTab({ data }: { data: AnalysisData }) {
   const { categories, summary } = data;
