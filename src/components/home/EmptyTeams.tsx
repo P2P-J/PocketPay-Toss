@@ -6,7 +6,6 @@ import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { PREVIEW_MODE } from '../../constants/config';
 import { Sparkle } from '../common/Sparkle';
-import { SoftBackground } from '../common/SoftBackground';
 import { JoinCodeSheet } from '../team/JoinCodeSheet';
 import { useTeamStore } from '../../store/teamStore';
 import { getTeamId } from '../../types/team';
@@ -56,8 +55,6 @@ export function EmptyTeams() {
 
   return (
     <View style={styles.wrap}>
-      <SoftBackground />
-
       <View style={styles.hero}>
         <Animated.View style={[styles.badge, { transform: [{ translateY: float }] }]}>
           <Sparkle size={40} />
@@ -81,7 +78,7 @@ export function EmptyTeams() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.screenX, overflow: 'hidden' },
+  wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.screenX },
   hero: { alignItems: 'center', gap: spacing.sm },
   badge: { width: 80, height: 80, borderRadius: 26, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md, shadowColor: colors.brand, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
   sub: { textAlign: 'center', lineHeight: 22, marginTop: spacing.xs },

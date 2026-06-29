@@ -11,6 +11,7 @@ import { BalanceCard } from '../components/home/BalanceCard';
 import { TopCategoryCard } from '../components/home/TopCategoryCard';
 import { TransactionList } from '../components/home/TransactionList';
 import { EmptyTeams } from '../components/home/EmptyTeams';
+import { SoftBackground } from '../components/common/SoftBackground';
 import { TabBar } from '../components/layout/TabBar';
 import { getTeamId } from '../types/team';
 import { teamApi } from '../api/team';
@@ -59,6 +60,7 @@ function Home() {
 
   return (
     <View style={styles.container}>
+      {teams.length === 0 && !error && <SoftBackground />}
       <View style={styles.body}>
         <TeamHeader teams={teams} currentTeam={currentTeam} onSelectTeam={setCurrentTeam} />
         {loading && !currentTeam ? (
