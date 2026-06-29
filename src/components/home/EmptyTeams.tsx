@@ -42,7 +42,7 @@ export function EmptyTeams() {
     try {
       const res = await teamApi.joinByToken(code);
       const team = res.data.team;
-      await fetchTeams();
+      await fetchTeams(true);
       await setCurrentTeam(getTeamId(team));
       setJoinOpen(false);
       Alert.alert(res.data.alreadyMember ? '이미 참가한 모임이에요' : '참가 완료', `‘${team.name}’ 모임이에요.`);

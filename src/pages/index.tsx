@@ -57,7 +57,7 @@ function Home() {
       if (!token) return;
       try {
         const res = await teamApi.joinByToken(token);
-        await fetchTeams();
+        await fetchTeams(true);
         await setCurrentTeam(getTeamId(res.data.team));
       } catch {
         // 만료/무효 초대는 조용히 무시
@@ -77,7 +77,7 @@ function Home() {
         ) : error ? (
           <View style={styles.center}>
             <Txt typography="t5" color={colors.expense} style={styles.errorText}>{error}</Txt>
-            <Pressable style={styles.retry} onPress={() => fetchTeams()}>
+            <Pressable style={styles.retry} onPress={() => fetchTeams(true)}>
               <Txt typography="t5" fontWeight="bold" color={colors.brand}>다시 시도</Txt>
             </Pressable>
           </View>

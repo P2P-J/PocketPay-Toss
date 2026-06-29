@@ -24,7 +24,8 @@ interface TeamState {
 
   editingTransaction: Transaction | null;
 
-  fetchTeams: () => Promise<void>;
+  hasFetchedTeams: boolean;
+  fetchTeams: (force?: boolean) => Promise<void>;
   setCurrentTeam: (teamId: string) => Promise<void>;
   createTeam: (input: NewTeamInput) => Promise<void>;
   updateTeam: (input: NewTeamInput) => Promise<void>;
@@ -142,10 +143,12 @@ export const useTeamStore = create<TeamState>((set, get) => {
   loading: false,
   error: null,
   editingTransaction: null,
+  hasFetchedTeams: false,
 
-  fetchTeams: async () => {
-    // 더미: 이미 로드됐으면 재시드 안 함(생성 모임 보존). 실모드는 재조회 허용(초대 수락 등 반영).
-    if (USE_SAMPLE && get().teams.length > 0) return;
+  // force=true일 때만 재조회. 기본은 세션당 1회 — 화면 재마운트 시 지연된 빈 응답이
+  // 방금 만든/참가한 모임을 덮어쓰지 않게 한다. (생성/참가/삭제/초대수락은 force로 갱신)
+  fetchTeams: async (force = false) => {
+    if (!force && get().hasFetchedTeams) return;
     if (USE_SAMPLE) {
       set({
         teams: sampleTeams,
@@ -153,6 +156,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
         ...statePatch(sampleTransactions),
         loading: false,
         error: null,
+        hasFetchedTeams: true,
       });
       return;
     }
@@ -160,7 +164,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
     try {
       const res = await teamApi.getMyTeams();
       const teams = res.data || [];
-      set({ teams });
+      set({ teams, hasFetchedTeams: true });
       if (teams.length > 0 && teams[0]) {
         // 기존 선택 모임이 아직 있으면 유지(재조회마다 teams[0]로 리셋 방지)
         const cur = get().currentTeam;
@@ -253,7 +257,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
         feeDueDay: input.feeEnabled ? input.feeDueDay : undefined,
         members: [{ user: { _id: 'me', name: '나', nickname: '나' }, role: 'owner' }],
       };
-      set({ teams: [...get().teams, team], currentTeam: team, ...statePatch([]) });
+      set({ teams: [...get().teams, team], currentTeam: team, ...statePatch([]), hasFetchedTeams: true });
       return;
     }
     set({ loading: true, error: null });
@@ -265,7 +269,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
       const list = listRes.data || [];
       const teams = list.some((t) => getTeamId(t) === getTeamId(created)) ? list : [created, ...list];
       // 새 모임은 거래가 없으니 곧장 현재 모임으로(빈 통계). summary/deals 추가 호출 실패해도 막힘 없음.
-      set({ teams, currentTeam: created, ...statePatch([]), loading: false, error: null });
+      set({ teams, currentTeam: created, ...statePatch([]), loading: false, error: null, hasFetchedTeams: true });
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임 생성에 실패했어요.' });
       throw e; // team-new에서 처리(실패 시 화면 유지+안내)
@@ -313,7 +317,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
     try {
       await teamApi.remove(id);
       set({ teams: [], currentTeam: null });
-      await get().fetchTeams();
+      await get().fetchTeams(true);
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임 삭제에 실패했어요.' });
     }
@@ -337,7 +341,7 @@ export const useTeamStore = create<TeamState>((set, get) => {
     try {
       await teamApi.leaveTeam(id);
       set({ teams: [], currentTeam: null });
-      await get().fetchTeams();
+      await get().fetchTeams(true);
     } catch (e) {
       set({ loading: false, error: e instanceof Error ? e.message : '모임 나가기에 실패했어요.' });
     }

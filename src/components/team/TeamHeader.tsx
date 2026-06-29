@@ -23,7 +23,7 @@ export function TeamHeader({ teams, currentTeam, onSelectTeam }: Props) {
   return (
     <View style={styles.header}>
       <Pressable style={styles.left} onPress={() => currentTeam && setTeamSheet(true)} disabled={!currentTeam}>
-        <Txt typography="t3" fontWeight="bold" color={currentTeam ? colors.textPrimary : colors.textTertiary} numberOfLines={1} style={styles.teamName}>{currentTeam?.name ?? '작은 모임'}</Txt>
+        <Txt typography="t3" fontWeight="bold" color={currentTeam ? colors.textPrimary : colors.brand} numberOfLines={1} style={styles.teamName}>{currentTeam?.name ?? '작은 모임'}</Txt>
         {currentTeam && <Icon name="icon-arrow-down-mono" size={20} color={colors.textSecondary} />}
       </Pressable>
       <Pressable style={styles.iconBtn} onPress={() => navigation.navigate('/alerts' as '/')}>

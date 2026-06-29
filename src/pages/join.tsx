@@ -35,7 +35,7 @@ function JoinPage() {
       }
       try {
         const res = await teamApi.joinByToken(token);
-        await fetchTeams();
+        await fetchTeams(true);
         await setCurrentTeam(getTeamId(res.data.team));
         navigation.navigate('/');
         Alert.alert(res.data.alreadyMember ? '이미 참가한 모임이에요' : '참가 완료', `‘${res.data.team.name}’ 모임이에요.`);

@@ -28,7 +28,7 @@ function AlertsPage() {
   const onAccept = async (teamId: string) => {
     try {
       await notificationsApi.accept(teamId);
-      await fetchTeams();
+      await fetchTeams(true);
       await fetchAlerts();
       Alert.alert('수락 완료', '모임에 참여했어요.');
     } catch (e) {
