@@ -13,12 +13,14 @@ import { TransactionList } from '../components/home/TransactionList';
 import { TabBar } from '../components/layout/TabBar';
 import { useTransactionActions } from '../hooks/useTransactionActions';
 import { useAlertsStore } from '../store/alertsStore';
+import { PREVIEW_MODE } from '../constants/config';
 
 export const Route = createRoute('/', { component: Home });
 
 function Home() {
   const navigation = useNavigation();
   const accessToken = useAuthStore((s) => s.accessToken);
+  const user = useAuthStore((s) => s.user);
   const checkAuth = useAuthStore((s) => s.checkAuth);
   const authLoading = useAuthStore((s) => s.loading);
   const { teams, currentTeam, summary, stats, transactions, loading, error, fetchTeams, setCurrentTeam } = useTeamStore();
@@ -28,6 +30,8 @@ function Home() {
   useEffect(() => { checkAuth(); }, [checkAuth]);
   useEffect(() => { if (accessToken) { fetchTeams(); fetchUnread(); } }, [accessToken, fetchTeams, fetchUnread]);
   useEffect(() => { if (!authLoading && !accessToken) navigation.navigate('/login'); }, [authLoading, accessToken, navigation]);
+  // 신규유저(핸들 없음) → 온보딩 프로필. 프리뷰는 더미라 건너뜀.
+  useEffect(() => { if (!PREVIEW_MODE && accessToken && user && !user.handle) navigation.navigate('/onboarding'); }, [accessToken, user, navigation]);
 
   if (!accessToken) return <View style={[styles.container, styles.center]}><ActivityIndicator color={colors.brand} /></View>;
 
