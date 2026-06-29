@@ -4,6 +4,7 @@ import { Txt } from '@toss/tds-react-native';
 import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { isValidInviteCode } from '../../lib/validation';
+import { PrimaryButton } from '../common/PrimaryButton';
 
 export function JoinCodeSheet({ visible, onClose, onSubmit, submitting }: {
   visible: boolean;
@@ -34,9 +35,7 @@ export function JoinCodeSheet({ visible, onClose, onSubmit, submitting }: {
           autoCorrect={false}
           maxLength={64}
         />
-        <Pressable style={[styles.submit, !canSubmit && styles.submitOff]} onPress={() => onSubmit(trimmed)} disabled={!canSubmit}>
-          <Txt typography="t4" fontWeight="bold" color={colors.white}>{submitting ? '참가 중…' : '참가하기'}</Txt>
-        </Pressable>
+        <PrimaryButton label={submitting ? '참가 중…' : '참가하기'} onPress={() => onSubmit(trimmed)} disabled={!canSubmit} style={styles.submit} />
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -50,6 +49,5 @@ const styles = StyleSheet.create({
   handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: colors.grey200, marginBottom: spacing.md },
   sub: { marginBottom: spacing.sm },
   input: { height: 52, borderRadius: radius.button, backgroundColor: colors.grey100, paddingHorizontal: spacing.lg, fontSize: 16, color: colors.textPrimary },
-  submit: { height: 52, borderRadius: radius.button, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', marginTop: spacing.sm },
-  submitOff: { backgroundColor: colors.grey300 },
+  submit: { marginTop: spacing.sm },
 });

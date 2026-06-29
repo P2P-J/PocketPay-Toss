@@ -5,6 +5,7 @@ import { colors } from '../../constants/colors';
 import { spacing, radius } from '../../constants/spacing';
 import { formatAmountInput, parseAmount } from '../../lib/format';
 import { FormField } from '../common/FormField';
+import { PrimaryButton } from '../common/PrimaryButton';
 import type { NewTeamInput } from '../../store/teamStore';
 import type { TeamCategory, TeamDisplayMode, TeamAccountMode } from '../../types/team';
 
@@ -130,9 +131,7 @@ export function TeamForm({ initial, submitLabel, onSubmit }: Props) {
         )}
       </View>
 
-      <Pressable style={[styles.submit, !canSubmit && styles.submitOff]} onPress={submit} disabled={!canSubmit}>
-        <Txt typography="t4" fontWeight="bold" color={colors.white}>{submitLabel}</Txt>
-      </Pressable>
+      <PrimaryButton label={submitLabel} onPress={submit} disabled={!canSubmit} style={styles.submit} />
     </View>
   );
 }
@@ -155,6 +154,5 @@ const styles = StyleSheet.create({
   feeInput: { minWidth: 90, fontSize: 16, fontWeight: '600', color: colors.textPrimary, textAlign: 'right', padding: 0 },
   dayInput: { minWidth: 36, fontSize: 16, fontWeight: '600', color: colors.textPrimary, textAlign: 'right', padding: 0 },
   dayUnit: { fontSize: 16, color: colors.textSecondary },
-  submit: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand, marginTop: spacing.sm },
-  submitOff: { backgroundColor: colors.grey300 },
+  submit: { marginTop: spacing.sm },
 });

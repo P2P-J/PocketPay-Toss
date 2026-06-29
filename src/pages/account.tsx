@@ -1,12 +1,13 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import React, { useState } from 'react';
-import { ScrollView, Pressable, Alert, StyleSheet } from 'react-native';
+import { ScrollView, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
-import { spacing, radius } from '../constants/spacing';
+import { spacing } from '../constants/spacing';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
 import { KeyboardScreen } from '../components/common/KeyboardScreen';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { PREVIEW_MODE } from '../constants/config';
 import { useAccountStore, selectAccount } from '../store/accountStore';
 import { useTeamStore } from '../store/teamStore';
@@ -63,9 +64,7 @@ function AccountPage() {
         <FormField label="은행" value={bank} onChangeText={setBank} placeholder="예: 토스뱅크" maxLength={20} />
         <FormField label="계좌번호" value={number} onChangeText={setNumber} placeholder="- 없이 숫자만" keyboardType="number-pad" maxLength={20} error={numberError} />
         <FormField label="예금주" value={holder} onChangeText={setHolder} placeholder="예금주명" maxLength={20} />
-        <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSave} disabled={!canSave}>
-          <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
-        </Pressable>
+        <PrimaryButton label="저장" onPress={onSave} disabled={!canSave} />
       </ScrollView>
     </KeyboardScreen>
   );
@@ -74,6 +73,4 @@ function AccountPage() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.lg },
-  save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand, marginTop: spacing.sm },
-  saveOff: { backgroundColor: colors.grey300 },
 });

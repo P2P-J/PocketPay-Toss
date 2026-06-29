@@ -1,11 +1,12 @@
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Pressable, Alert, StyleSheet } from 'react-native';
+import { View, ScrollView, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
-import { spacing, radius } from '../constants/spacing';
+import { spacing } from '../constants/spacing';
 import { FormField } from '../components/common/FormField';
 import { KeyboardScreen } from '../components/common/KeyboardScreen';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { useAuthStore } from '../store/authStore';
 import { isValidHandle } from '../lib/validation';
 import { accountApi } from '../api/account';
@@ -79,9 +80,7 @@ function OnboardingPage() {
         <FormField label="고유 ID (핸들)" value={handle} onChangeText={setHandle} placeholder="영문 소문자, 숫자, _" autoCapitalize="none" maxLength={20} hint={handleHint} error={handleError} />
       </ScrollView>
       <View style={styles.bottom}>
-        <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSubmit} disabled={!canSave}>
-          <Txt typography="t4" fontWeight="bold" color={colors.white}>{saving ? '저장 중…' : '시작하기'}</Txt>
-        </Pressable>
+        <PrimaryButton label={saving ? '저장 중…' : '시작하기'} onPress={onSubmit} disabled={!canSave} />
       </View>
     </KeyboardScreen>
   );
@@ -93,6 +92,4 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.lg },
   intro: { marginBottom: spacing.xs },
   bottom: { paddingHorizontal: spacing.screenX, paddingBottom: 40, paddingTop: spacing.sm },
-  save: { alignItems: 'center', justifyContent: 'center', height: 54, borderRadius: radius.button, backgroundColor: colors.brand },
-  saveOff: { backgroundColor: colors.grey300 },
 });

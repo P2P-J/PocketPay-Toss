@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { ScrollView, View, Pressable, Alert, StyleSheet } from 'react-native';
 import { Txt } from '@toss/tds-react-native';
 import { colors } from '../constants/colors';
-import { spacing, radius } from '../constants/spacing';
+import { spacing } from '../constants/spacing';
 import { PREVIEW_MODE } from '../constants/config';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
 import { KeyboardScreen } from '../components/common/KeyboardScreen';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { Avatar } from '../components/common/Avatar';
 import { useProfileStore } from '../store/profileStore';
 import { useAuthStore } from '../store/authStore';
@@ -110,9 +111,7 @@ function ProfilePage() {
           error={handleError}
         />
 
-        <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSave} disabled={!canSave}>
-          <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
-        </Pressable>
+        <PrimaryButton label="저장" onPress={onSave} disabled={!canSave} style={styles.saveBtn} />
 
         <View style={styles.account}>
           <Pressable style={styles.textBtn} onPress={onLogout}>
@@ -131,8 +130,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
   scroll: { paddingHorizontal: spacing.screenX, paddingBottom: spacing.section, gap: spacing.lg },
   avatarWrap: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg },
-  save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand, marginTop: spacing.sm },
-  saveOff: { backgroundColor: colors.grey300 },
+  saveBtn: { marginTop: spacing.sm },
   account: { marginTop: spacing.section, flexDirection: 'row', justifyContent: 'center', gap: spacing.xl },
   textBtn: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
 });

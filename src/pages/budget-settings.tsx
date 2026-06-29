@@ -9,6 +9,7 @@ import { getCategoryLabel, getCategoryEmoji } from '../constants/categories';
 import { CategoryPicker } from '../components/deal/CategoryPicker';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { KeyboardScreen } from '../components/common/KeyboardScreen';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { useBudgetStore, selectBudget, type BudgetLimit } from '../store/budgetStore';
 import { useCurrentTeamId } from '../hooks/useCurrentTeamId';
 
@@ -92,9 +93,7 @@ function BudgetSettingsPage() {
           )}
         </View>
 
-        <Pressable style={styles.save} onPress={onSave}>
-          <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
-        </Pressable>
+        <PrimaryButton label="저장" onPress={onSave} />
       </ScrollView>
     </KeyboardScreen>
   );
@@ -116,5 +115,4 @@ const styles = StyleSheet.create({
   remove: { fontSize: 16, color: colors.textTertiary, paddingLeft: spacing.xs },
   picker: { marginTop: spacing.sm },
   addBtn: { alignItems: 'center', justifyContent: 'center', height: 48, borderRadius: radius.button, borderWidth: 1, borderColor: colors.divider, borderStyle: 'dashed', marginTop: spacing.sm },
-  save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand },
 });

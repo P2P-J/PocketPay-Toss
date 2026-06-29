@@ -14,6 +14,7 @@ import { DatePickerSheet } from '../components/deal/DatePickerSheet';
 import { DetailHeader } from '../components/layout/DetailHeader';
 import { FormField } from '../components/common/FormField';
 import { KeyboardScreen } from '../components/common/KeyboardScreen';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { useTeamStore } from '../store/teamStore';
 
 export const Route = createRoute('/deal-new', { component: DealNewPage });
@@ -194,9 +195,7 @@ function DealNewPage() {
         </View>
 
         {/* 저장 */}
-        <Pressable style={[styles.save, !canSave && styles.saveOff]} onPress={onSave} disabled={!canSave}>
-          <Txt typography="t4" fontWeight="bold" color={colors.white}>저장</Txt>
-        </Pressable>
+        <PrimaryButton label="저장" onPress={onSave} disabled={!canSave} />
 
         {/* 거래 삭제 (수정 모드) */}
         {editing && (
@@ -227,7 +226,5 @@ const styles = StyleSheet.create({
   receiptPreview: { borderRadius: radius.button, overflow: 'hidden', backgroundColor: colors.grey100 },
   receiptImg: { width: '100%', height: 220 },
   ocrOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: spacing.sm, backgroundColor: 'rgba(0,0,0,0.45)' },
-  save: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.brand },
-  saveOff: { backgroundColor: colors.grey300 },
   delete: { alignItems: 'center', justifyContent: 'center', height: 52, borderRadius: radius.button, backgroundColor: colors.expenseTint },
 });
