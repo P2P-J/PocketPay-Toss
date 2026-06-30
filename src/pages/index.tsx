@@ -26,7 +26,6 @@ function Home() {
   const navigation = useNavigation();
   const accessToken = useAuthStore((s) => s.accessToken);
   const user = useAuthStore((s) => s.user);
-  const checkAuth = useAuthStore((s) => s.checkAuth);
   const authLoading = useAuthStore((s) => s.loading);
   const teams = useTeamStore((s) => s.teams);
   const currentTeam = useTeamStore((s) => s.currentTeam);
@@ -40,7 +39,6 @@ function Home() {
   const { onEdit, onDelete } = useTransactionActions();
   const fetchUnread = useAlertsStore((s) => s.fetchUnread);
 
-  useEffect(() => { checkAuth(); }, [checkAuth]);
   useEffect(() => { if (accessToken) { fetchTeams(); fetchUnread(); } }, [accessToken, fetchTeams, fetchUnread]);
   useEffect(() => { if (!authLoading && !accessToken) navigation.navigate('/login'); }, [authLoading, accessToken, navigation]);
   // 신규유저(핸들 없음) → 온보딩 프로필. replace로 뒤로가기 우회 차단. 프리뷰는 더미라 건너뜀.
