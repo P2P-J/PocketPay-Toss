@@ -11,6 +11,22 @@
 토스 앱 안에서 바로 실행되는 미니앱이며, iOS App Store에 정식 출시된 [PocketPay](https://github.com/P2P-J)를
 앱인토스 플랫폼으로 포팅한 버전입니다. 백엔드는 기존 앱과 **동일한 서버를 공유**합니다.
 
+## 미리보기
+
+**메인**
+
+| 홈 | 거래 내역 | 더보기 |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/01-홈.png" width="240"/> | <img src="docs/screenshots/02-거래.png" width="140"/> | <img src="docs/screenshots/03-더보기.png" width="240"/> |
+
+**분석**
+
+| 요약 | 카테고리 | 예산 | 멤버 정산 |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/04-분석-요약.png" width="125"/> | <img src="docs/screenshots/05-분석-카테고리.png" width="210"/> | <img src="docs/screenshots/06-분석-예산.png" width="210"/> | <img src="docs/screenshots/07-분석-멤버.png" width="195"/> |
+
+---
+
 ## 시스템 구성
 
 **클라이언트는 둘, 서버는 하나입니다.** 토스 미니앱(이 저장소)과 iOS 앱이 같은 백엔드·DB를 공유해요.
