@@ -2,8 +2,8 @@
 
 > 소모임 회비·정산·영수증을 자동으로 정리하는 **간편 가계부** — 앱인토스(Apps-in-Toss) 미니앱
 
-[![Apps in Toss](https://img.shields.io/badge/Apps%20in%20Toss-출시-3DD598)](https://apps-in-toss.im)
-[![Framework](https://img.shields.io/badge/Granite-React%20Native-3182F6)](https://tossmini-docs.toss.im)
+[![Apps in Toss](https://img.shields.io/badge/Apps%20in%20Toss-출시-3DD598)]([https://apps-in-toss.im](https://minion.toss.im/zzIpbJMn))
+[![Framework](https://img.shields.io/badge/Granite-React%20Native-3182F6)]([https://tossmini-docs.toss.im](https://minion.toss.im/zzIpbJMn))
 
 동호회·여행·정기모임 같은 소규모 모임의 돈 관리를 간편하게 해주는 회계 앱이에요.
 **영수증만 찍으면 거래가 자동 기록**되고, **1인당 얼마인지 자동 계산**해서 단톡방에 바로 공유할 수 있어요.
